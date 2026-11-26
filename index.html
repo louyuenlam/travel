@@ -7,14 +7,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Travel">
-<meta name="theme-color" content="#f7f1e8">
+<meta name="theme-color" content="#CFE6F7">
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" href="./icon.png">
 <title>Travel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   /* Cream + dusty blue palette */
@@ -856,6 +856,7 @@ input, textarea, select { font-family: inherit; font-size: 16px; color: var(--in
 .field input[type="text"],
 .field input[type="number"],
 .field input[type="date"],
+.field input[type="datetime-local"],
 .field input[type="time"],
 .field input[type="url"],
 .field textarea,
@@ -1207,11 +1208,163 @@ input, textarea, select { font-family: inherit; font-size: 16px; color: var(--in
 }
 .delete-link.armed { background: var(--warn); color: white; }
 .tabbar.four button { font-size: 13px; padding-left: 4px; padding-right: 4px; }
+.tabbar.five button { font-size: 12px; padding-left: 2px; padding-right: 2px; }
+
+/* Map */
+.map-box { position: relative; isolation: isolate; height: 52vh; min-height: 300px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--cream-dark); }
+.map-inner { position: absolute; inset: 0; }
+.map-msg { padding: 40px 18px; text-align: center; color: var(--muted); font-size: 14px; }
+.map-actions { display: flex; gap: 8px; margin-top: 12px; }
+.map-actions .btn { flex: 1; }
+.map-cross { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; z-index: 900; pointer-events: none; display: none; }
+.map-cross::before, .map-cross::after { content: ''; position: absolute; background: var(--warn); }
+.map-cross::before { left: 12px; top: 0; width: 2px; height: 26px; }
+.map-cross::after { top: 12px; left: 0; height: 2px; width: 26px; }
+.map-box.picking .map-cross { display: block; }
+.route-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--cream-soft); border: 1px solid var(--border); }
+.route-row.off { opacity: 0.5; }
+.route-row .rr-swatch { width: 14px; height: 14px; border-radius: 4px; flex: none; cursor: pointer; }
+.route-row .rr-main { flex: 1; min-width: 0; cursor: pointer; }
+.route-row .rr-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.route-row .rr-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.ci-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: white; border: 1px solid var(--border); }
+.ci-num { width: 24px; height: 24px; border-radius: 50%; background: var(--warn); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+.ci-main { flex: 1; min-width: 0; cursor: pointer; }
+.ci-note { font-size: 13px; font-weight: 600; word-break: break-word; }
+.ci-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.ci-pin { background: none; border: none; }
+.ci-pin span { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--warn); border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.ci-pin span b { transform: rotate(45deg); color: white; font-size: 11px; }
+.leaflet-popup-content { font-family: inherit; font-size: 13px; }
 
 @media (min-width: 820px) {
   .trip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
 }
 
+/* =========================================================
+   v3 · 2026-11-26 — Boarding-pass theme (baby blue + navy)
+   ========================================================= */
+:root {
+  --sky: #CFE6F7;
+  --navy: #1F3A68;
+  --navy-ink: #13233B;
+  --pass: #FFF4E0;
+  --pass-line: #D9C9A8;
+  --blue-mid: #3D6FB0;
+  --coral: #E2725B;
+  --mustard: #E0A526;
+  --cream: var(--sky);
+  --cream-soft: #FFF9EE;
+  --cream-dark: #E8DCC2;
+  --ink: var(--navy-ink);
+  --ink-soft: #33466A;
+  --muted: #5E6B85;
+  --border: #E3D6BB;
+  --accent: var(--blue-mid);
+  --accent-dark: var(--navy);
+  --accent-tint: #E3EEF9;
+  --warn: #C4513A;
+  --warn-tint: #F8DDD5;
+  --radius: 18px;
+}
+body { background: var(--sky); }
+body::before, body::after { display: none; }
+.mono { font-family: 'Space Mono', ui-monospace, monospace; }
+.bebas { font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif; letter-spacing: 0.5px; }
+
+/* Header */
+.brand { font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif; font-size: 44px; font-weight: 400; letter-spacing: 1px; color: var(--navy-ink); }
+.brand em { font-style: normal; font-weight: 400; color: var(--coral); }
+body.lang-zh .brand { font-family: 'Noto Sans TC', sans-serif; font-weight: 900; font-size: 34px; letter-spacing: 0; }
+body.lang-zh .brand em { font-weight: 900; }
+.lang-toggle { background: white; border: 2px solid var(--navy-ink); }
+.lang-toggle button { color: var(--navy-ink); }
+.lang-toggle button.active { background: var(--navy); color: var(--pass); box-shadow: none; }
+.sync-pill { background: white; color: var(--navy-ink); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; }
+.sync-pill.ok { background: white; color: var(--navy-ink); }
+.sync-pill.ok .dot { background: #2F8F5B; }
+.version-tag { color: var(--navy-ink); opacity: 0.7; font-family: 'Space Mono', monospace; }
+.back-link { color: var(--navy-ink); font-weight: 700; }
+.section-title { color: var(--navy-ink); font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 2px; }
+
+/* Cards = ticket paper */
+.card { background: var(--pass); border: none; box-shadow: 0 2px 0 rgba(19,35,59,.08); }
+.card h2 { font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif; font-weight: 400; letter-spacing: .5px; }
+.modal { background: var(--pass); }
+.modal h3 { color: var(--navy-ink); }
+.empty-state { color: var(--muted); }
+.type-hint { color: var(--muted); }
+
+/* Buttons */
+.btn.primary { background: var(--navy); color: var(--pass); }
+.btn.primary:active { background: var(--navy-ink); }
+.btn.secondary { background: white; border: 2px solid var(--navy-ink); color: var(--navy-ink); }
+.add-btn { background: white; border: 2px dashed var(--navy-ink); color: var(--navy-ink); font-weight: 700; border-radius: 14px; }
+.mini-add { background: white; border: 2px dashed var(--navy-ink); color: var(--navy-ink); border-radius: 12px; min-height: 44px; }
+.icon-btn { background: white; border: 2px solid var(--navy-ink); color: var(--navy-ink); }
+.small-btn { border: 2px solid var(--navy-ink); color: var(--navy-ink); }
+.field .chip-picker button.active { background: var(--navy); color: var(--pass); border-color: var(--navy); }
+.ref-pill { font-family: 'Space Mono', monospace; background: white; color: var(--navy-ink); border: 1.5px solid var(--navy-ink); }
+
+/* Tabs = pills */
+.tabbar, .tabbar.four, .tabbar.five { background: none; padding: 0; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.tabbar::-webkit-scrollbar { display: none; }
+.tabbar button, .tabbar.five button {
+  flex: 1 0 auto; min-height: 44px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 800;
+  background: white; border: 2px solid var(--navy-ink); color: var(--navy-ink);
+}
+.tabbar button.active { background: var(--navy); border-color: var(--navy); color: var(--pass); box-shadow: none; }
+
+/* Boarding pass (trip header + home cards) */
+.pass { background: var(--pass); border-radius: 18px; overflow: hidden; margin-bottom: 16px; color: var(--navy-ink); box-shadow: 0 2px 0 rgba(19,35,59,.08); }
+.pass-top { background: var(--navy); color: var(--pass); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.pass-top .pt-label { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+.pass-top .pt-zh { font-size: 13px; font-weight: 900; }
+.pass-top .pt-edit { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,244,224,.15); color: var(--pass); font-size: 15px; }
+.pass-body { padding: 14px 16px 12px; }
+.pass-to { font-family: 'Space Mono', monospace; font-size: 11px; }
+.pass-name { font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif; font-size: 44px; line-height: 1; margin: 2px 0 4px; word-break: break-word; }
+body.lang-zh .pass-name { font-family: 'Bebas Neue', 'Noto Sans TC', sans-serif; }
+.pass-dest { font-size: 13px; }
+.pass-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 16px 14px; }
+.pass-grid .pg-k { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+.pass-grid .pg-v { font-weight: 900; font-size: 15px; line-height: 1.3; }
+.pass-tear { border-top: 2px dashed var(--pass-line); margin: 0 14px; }
+.pass-foot { padding: 12px 16px 14px; display: flex; align-items: center; gap: 14px; }
+.barcode { flex: 1; height: 38px; background: repeating-linear-gradient(90deg, var(--navy-ink) 0 2px, transparent 2px 4px, var(--navy-ink) 4px 7px, transparent 7px 9px, var(--navy-ink) 9px 10px, transparent 10px 13px); }
+.countdown { display: flex; flex-direction: column; align-items: center; background: var(--navy); color: var(--pass); border-radius: 10px; padding: 4px 12px; min-width: 64px; }
+.countdown .cd-n { font-family: 'Bebas Neue', sans-serif; font-size: 30px; line-height: 1; }
+.countdown .cd-l { font-size: 11px; font-weight: 700; white-space: nowrap; }
+.countdown.word .cd-n { font-family: inherit; font-size: 14px; font-weight: 900; padding: 6px 0; }
+
+/* Home trip cards */
+.trip-card { background: none; border: none; padding: 0; box-shadow: none; }
+.trip-card.past { background: none; opacity: 0.7; }
+.trip-card .pass { margin-bottom: 0; }
+.trip-card .pass-name { font-size: 34px; }
+
+/* Itinerary */
+.day-head { border-bottom: none; justify-content: flex-start; gap: 10px; align-items: baseline; }
+.day-head .dh-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: .5px; color: var(--navy-ink); text-transform: none; font-weight: 400; }
+.day-head .dh-date { font-family: inherit; font-style: normal; font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+body.lang-zh .day-head .dh-date { font-family: inherit; }
+.trip-row { padding: 0; gap: 0; align-items: stretch; overflow: hidden; border: none; border-radius: 12px; background: white; box-shadow: 0 1px 0 rgba(19,35,59,.1); }
+.trip-row.soft { background: #FBF3E3; }
+.trip-row .trip-main { padding: 10px 14px; }
+.trip-ico { flex: 0 0 54px; height: auto; min-height: 58px; border-radius: 0; background: var(--blue-mid); color: white; border-right: 2px dashed var(--navy-ink); }
+.trip-ico.stay { background: var(--coral); color: white; }
+.trip-ico.activity { background: var(--mustard); color: var(--navy-ink); }
+.trip-ico svg { width: 22px; height: 22px; }
+.trip-time { color: var(--navy); font-family: 'Space Mono', monospace; font-size: 11px; }
+.trip-title { font-weight: 800; }
+.ticket-card { border: none; background: white; border-radius: 12px; }
+
+/* Packing / budget accents */
+.progress > div { background: var(--navy); }
+.pack-check.on { background: var(--navy); border-color: var(--navy); }
+.money-tile { background: white; border: none; }
+.money-tile .mt-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; font-weight: 400; }
+.ci-num, .ci-pin span { background: var(--coral); }
 </style>
 </head>
 <body>
@@ -1224,7 +1377,7 @@ input, textarea, select { font-family: inherit; font-size: 16px; color: var(--in
  * phones automatically. Trips, packing, expenses and files live in their
  * own sheets.
  * ============================================================ */
-const APP_VERSION = 'v1 · 2026-11-26';
+const APP_VERSION = 'v3 · 2026-11-26';
 
 const LS = {
   syncUrl: 'travelSyncUrl_v1',
@@ -1298,7 +1451,17 @@ const I18N = {
     saved: 'Saved', deleted: 'Deleted', saveFail: 'Save failed — try again', needTitle: 'Please add a title',
     needDates: 'Please add the dates', endBeforeStart: 'Last day is before the first day', needAmount: 'Please add an amount',
     syncUrlLabel: 'Apps Script sync URL', syncUrlHint: 'The Apps Script address shared with the family calendar. Already filled in.',
-    settings: 'Sync settings', untitled: '(untitled)', onlineOnly: 'You need to be online for this'
+    settings: 'Sync settings', untitled: '(untitled)', onlineOnly: 'You need to be online for this',
+    daysToGo: n => n === 1 ? 'day to go' : 'days to go', pkDate: 'DATE', pkWho: 'PASSENGERS', pkNights: 'NIGHTS', dayTrip: 'Day trip',
+    tabMap: 'Map', checkinBtn: '📍 Check in here', addGpx: '+ Upload GPX route', routes: 'Routes', checkins: 'Check-ins',
+    mapIntro: 'Record a walk with Open GPX Tracker, export the .gpx file and upload it here. Check-ins save where you are right now.',
+    noRoutes: 'No routes yet.', noCheckins: 'No check-ins yet.', mapNeedNet: 'The map needs an internet connection the first time.',
+    locating: 'Finding your location…', gpsFail: 'Could not get your location — allow Location for this app, or use the map centre',
+    useCentre: '+ Use map centre', pickHint: 'Move the map so the red cross is on the spot, then tap Save',
+    newCheckin: 'Check in', editCheckin: 'Edit check-in', ciNote: 'Note (optional)', ciNotePh: 'e.g. Lunch at the market',
+    ciWhen: 'Time', accuracy: m => `accurate to about ${m} m`, openMaps: 'Open in Maps',
+    notGpx: 'That is not a GPX file', gpxLoading: 'Loading route…', gpxFail: 'Could not load this route',
+    km: n => `${n} km`, routeSaved: 'Route added', checkedIn: 'Checked in', hideShow: 'Tap the colour to show / hide'
   },
   zh: {
     brand1: '旅行', brand2: '計劃', toCalendar: '← 家庭日曆', allTrips: '← 所有旅程',
@@ -1342,7 +1505,17 @@ const I18N = {
     saved: '已儲存', deleted: '已刪除', saveFail: '儲存失敗，請再試', needTitle: '請填標題',
     needDates: '請填日期', endBeforeStart: '最後一日早過第一日', needAmount: '請填金額',
     syncUrlLabel: 'Apps Script 同步網址', syncUrlHint: '同家庭日曆共用嘅 Apps Script 網址，已經預設好。',
-    settings: '同步設定', untitled: '(冇標題)', onlineOnly: '要有網先做到'
+    settings: '同步設定', untitled: '(冇標題)', onlineOnly: '要有網先做到',
+    daysToGo: n => '日後出發', pkDate: '日期', pkWho: '乘客', pkNights: '晚數', dayTrip: '即日來回',
+    tabMap: '地圖', checkinBtn: '📍 喺度打卡', addGpx: '+ 上載 GPX 路線', routes: '路線', checkins: '打卡',
+    mapIntro: '用 Open GPX Tracker 錄低行過嘅路，匯出 .gpx 檔再上載到呢度。打卡會記低你而家嘅位置。',
+    noRoutes: '仲未有路線。', noCheckins: '仲未有打卡。', mapNeedNet: '第一次開地圖要有網。',
+    locating: '搵緊你嘅位置…', gpsFail: '攞唔到位置，請俾呢個 app 用「位置」，或者用地圖中心',
+    useCentre: '+ 用地圖中心', pickHint: '拖地圖令紅色十字對準個位，再㩒儲存',
+    newCheckin: '打卡', editCheckin: '編輯打卡', ciNote: '備註(可選)', ciNotePh: '例如：喺市集食午餐',
+    ciWhen: '時間', accuracy: m => `準確度大約 ${m} 米`, openMaps: '喺地圖 app 打開',
+    notGpx: '呢個唔係 GPX 檔', gpxLoading: '載入緊路線…', gpxFail: '載入唔到呢條路線',
+    km: n => `${n} 公里`, routeSaved: '已加入路線', checkedIn: '已打卡', hideShow: '㩒顏色可以顯示 / 隱藏'
   }
 };
 
@@ -1600,7 +1773,7 @@ function parseRoute() {
   return { view: 'home', tripId: null, tab: 'itin' };
 }
 function go(hash) { if (location.hash === hash) { state.route = parseRoute(); render(); } else location.hash = hash; }
-window.addEventListener('hashchange', () => { state.route = parseRoute(); state.modal = null; render(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => { state.route = parseRoute(); state.modal = null; mapState.picking = false; render(); window.scrollTo(0, 0); });
 
 /* ---------------- rendering ---------------- */
 function rerender() {
@@ -1617,6 +1790,7 @@ function render() {
   } else body = renderHome();
   document.getElementById('app').innerHTML = renderHeader() + body + renderModal();
   renderSyncPill();
+  if (r.view === 'trip' && r.tab === 'map' && tripById(r.tripId)) mountMap(tripById(r.tripId));
 }
 function renderHeader() {
   const lang = state.lang;
@@ -1659,13 +1833,7 @@ function renderHome() {
     const nights = Math.max(0, daysBetween(trip.start_date, trip.end_date));
     return `
       <button class="trip-card ${st.cls === 'past' ? 'past' : ''}" onclick="go('#/trip/${encodeURIComponent(trip.id)}/itin')">
-        <div class="tc-top"><div class="tc-name">${esc(trip.name || t('untitled'))}</div><div class="tc-count">${esc(st.text)}</div></div>
-        <div class="tc-sub">${esc([trip.destination, fmtRange(trip.start_date, trip.end_date)].filter(Boolean).join(' · '))}</div>
-        <div class="tc-stats">
-          <span class="stat-pill">${esc(t('nights', nights))}</span>
-          <span class="stat-pill">${esc(t('items', items.length))}</span>
-          ${pack.length ? `<span class="stat-pill">${esc(t('packed', packedN, pack.length))}</span>` : ''}
-        </div>
+        ${renderPass(trip, false)}
       </button>`;
   };
   return `
@@ -1686,29 +1854,62 @@ function renderHome() {
 }
 function saveSyncUrl(v) { lsSet(LS.syncUrl, String(v || '').trim()); pull(); }
 
+function countdownBox(trip) {
+  const today = todayKey();
+  if (trip.start_date > today) {
+    const n = daysBetween(today, trip.start_date);
+    return `<div class="countdown"><span class="cd-n">${n}</span><span class="cd-l">${esc(t('daysToGo', n))}</span></div>`;
+  }
+  return `<div class="countdown word"><span class="cd-n">${esc(tripStatus(trip).text)}</span></div>`;
+}
+function passDate(a, b) {
+  const A = parseKey(a), B = parseKey(b || a);
+  if (state.lang === 'zh') {
+    if (a === b || !b) return `${A.getMonth() + 1}月${A.getDate()}日`;
+    return A.getMonth() === B.getMonth() ? `${A.getMonth() + 1}月${A.getDate()}–${B.getDate()}日` : `${A.getMonth() + 1}月${A.getDate()}日–${B.getMonth() + 1}月${B.getDate()}日`;
+  }
+  const m = d => d.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase();
+  if (a === b || !b) return `${A.getDate()} ${m(A)}`;
+  return A.getMonth() === B.getMonth() ? `${A.getDate()}–${B.getDate()} ${m(A)}` : `${A.getDate()} ${m(A)} – ${B.getDate()} ${m(B)}`;
+}
+function renderPass(trip, editable) {
+  const nights = Math.max(0, daysBetween(trip.start_date, trip.end_date));
+  const trav = list(trip.travellers);
+  return `
+    <div class="pass">
+      <div class="pass-top">
+        <span class="pt-label">BOARDING PASS</span>
+        ${editable ? `<button class="pt-edit" aria-label="${esc(t('editTrip'))}" onclick="event.stopPropagation(); openTripModal('${esc(trip.id)}')">✎</button>` : `<span class="pt-zh">登機證</span>`}
+      </div>
+      <div class="pass-body">
+        <div class="pass-to">TO</div>
+        <div class="pass-name">${esc(trip.name || t('untitled'))}</div>
+        ${trip.destination ? `<div class="pass-dest">${esc(trip.destination)}</div>` : ''}
+      </div>
+      <div class="pass-grid">
+        <div><div class="pg-k">${esc(t('pkDate'))}</div><div class="pg-v">${esc(passDate(trip.start_date, trip.end_date))}</div></div>
+        <div><div class="pg-k">${esc(t('pkWho'))}</div><div class="pg-v">${esc(trav.map(personName).join(' · ') || '—')}</div></div>
+        <div><div class="pg-k">${esc(t('pkNights'))}</div><div class="pg-v">${esc(nights ? t('nights', nights) : t('dayTrip'))}</div></div>
+      </div>
+      <div class="pass-tear"></div>
+      <div class="pass-foot"><div class="barcode" aria-hidden="true"></div>${countdownBox(trip)}</div>
+    </div>`;
+}
 function renderTrip(trip, tab) {
   const nights = Math.max(0, daysBetween(trip.start_date, trip.end_date));
   const trav = list(trip.travellers);
-  const tabs = [['itin', 'tabItin'], ['tickets', 'tabTickets'], ['pack', 'tabPack'], ['budget', 'tabBudget']];
+  const tabs = [['itin', 'tabItin'], ['tickets', 'tabTickets'], ['pack', 'tabPack'], ['budget', 'tabBudget'], ['map', 'tabMap']];
   let content = '';
   if (tab === 'tickets') content = renderTickets(trip);
   else if (tab === 'pack') content = renderPacking(trip);
   else if (tab === 'budget') content = renderBudget(trip);
+  else if (tab === 'map') content = renderMap(trip);
   else content = renderItinerary(trip);
   return `
     <div class="view">
       <button class="back-link" onclick="go('#/')">${esc(t('allTrips'))}</button>
-      <div class="card trip-head">
-        <div class="th-row">
-          <div>
-            <h2>${esc(trip.name || t('untitled'))}</h2>
-            <div class="th-sub">${esc([trip.destination, fmtRange(trip.start_date, trip.end_date), t('nights', nights)].filter(Boolean).join(' · '))}</div>
-          </div>
-          <button class="icon-btn" onclick="openTripModal('${esc(trip.id)}')">✎</button>
-        </div>
-        <div class="th-chips">${trav.map(chipFor).join('')}<span class="stat-pill">${esc(tripStatus(trip).text)}</span></div>
-      </div>
-      <div class="tabbar four">
+      ${renderPass(trip, true)}
+      <div class="tabbar five">
         ${tabs.map(([k, l]) => `<button class="${tab === k ? 'active' : ''}" onclick="go('#/trip/${encodeURIComponent(trip.id)}/${k}')">${esc(t(l))}</button>`).join('')}
       </div>
       ${content}
@@ -1770,7 +1971,7 @@ function renderItinerary(trip) {
     rows.sort((a, b) => a.order - b.order || String(a.time || '').localeCompare(String(b.time || '')));
     return `
       <div class="day-block">
-        <div class="day-head"><span class="dh-date">${esc(fmtDay(k))}</span><span class="dh-num">${esc(t('day', i + 1))}</span></div>
+        <div class="day-head"><span class="dh-num">DAY ${pad(i + 1)}</span><span class="dh-date">${esc(fmtDay(k))}</span></div>
         ${rows.length ? rows.map(r => r.html).join('') : `<div class="type-hint" style="margin:0 0 8px 4px">${esc(t('nothingDay'))}</div>`}
         <button class="mini-add" onclick="openItemModal(null, '${k}')">${esc(t('addHere'))}</button>
       </div>`;
@@ -1966,6 +2167,379 @@ function renderBudget(trip) {
     </div>`;
 }
 
+/* ---- Map (GPX routes + check-ins) ----
+   Stored in the Files sheet so no Apps Script change is needed:
+   - GPX route: an uploaded file with parent_id 'gpx'
+   - Check-in:  a Files row with parent_id 'checkin', mime 'application/x-checkin',
+                name = JSON {lat, lng, acc, note, at}  (no Drive file) */
+const GPX_PARENT = 'gpx';
+const CHECKIN_PARENT = 'checkin';
+const CHECKIN_MIME = 'application/x-checkin';
+const ROUTE_COLOURS = ['#5a7196', '#c0694e', '#5f8f62', '#8e6bb0', '#c99a2e', '#3f8f9a'];
+const LEAFLET_VER = '1.9.4';
+const mapState = { el: null, map: null, layers: null, tripId: null, sig: '', gpx: {}, failed: {}, loading: {}, hidden: new Set(), picking: false };
+
+function isMapFile(f) { const p = String(f.parent_id); return p === GPX_PARENT || p === CHECKIN_PARENT; }
+function gpxFiles(trip) {
+  return D().files.filter(f => String(f.trip_id) === String(trip.id) && String(f.parent_id) === GPX_PARENT)
+    .sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
+}
+function parseCheckin(f) {
+  try {
+    const o = JSON.parse(f.name);
+    const lat = Number(o.lat), lng = Number(o.lng);
+    if (!isFinite(lat) || !isFinite(lng)) return null;
+    return { id: f.id, lat, lng, acc: o.acc, note: o.note || '', at: o.at || f.created_at || '', raw: f };
+  } catch { return null; }
+}
+function tripCheckins(trip) {
+  return D().files.filter(f => String(f.trip_id) === String(trip.id) && String(f.parent_id) === CHECKIN_PARENT)
+    .map(parseCheckin).filter(Boolean)
+    .sort((a, b) => String(a.at).localeCompare(String(b.at)));
+}
+function routeColour(trip, id) { const i = gpxFiles(trip).findIndex(f => String(f.id) === String(id)); return ROUTE_COLOURS[Math.max(0, i) % ROUTE_COLOURS.length]; }
+
+/* GPX parsing */
+function parseGpx(text) {
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('bad xml');
+  const root = doc.documentElement;
+  if (!root || root.localName !== 'gpx') throw new Error('not gpx');
+  const pt = el => {
+    const lat = parseFloat(el.getAttribute('lat')), lng = parseFloat(el.getAttribute('lon'));
+    const tEl = el.getElementsByTagNameNS('*', 'time')[0];
+    const time = tEl ? Date.parse(tEl.textContent) : NaN;
+    return { lat, lng, time };
+  };
+  const ok = p => isFinite(p.lat) && isFinite(p.lng);
+  let segs = Array.from(doc.getElementsByTagNameNS('*', 'trkseg'))
+    .map(s => Array.from(s.getElementsByTagNameNS('*', 'trkpt')).map(pt).filter(ok)).filter(s => s.length);
+  if (!segs.length) segs = Array.from(doc.getElementsByTagNameNS('*', 'rte'))
+    .map(r => Array.from(r.getElementsByTagNameNS('*', 'rtept')).map(pt).filter(ok)).filter(s => s.length);
+  const wpts = Array.from(doc.getElementsByTagNameNS('*', 'wpt')).map(w => {
+    const p = pt(w); const n = w.getElementsByTagNameNS('*', 'name')[0];
+    p.name = n ? n.textContent : ''; return p;
+  }).filter(ok);
+  if (!segs.length && !wpts.length) throw new Error('empty');
+  let dist = 0, t0 = NaN, t1 = NaN;
+  segs.forEach(s => s.forEach((p, i) => {
+    if (i) dist += haversine(s[i - 1], p);
+    if (isFinite(p.time)) { if (!isFinite(t0) || p.time < t0) t0 = p.time; if (!isFinite(t1) || p.time > t1) t1 = p.time; }
+  }));
+  return { segs: segs.map(s => s.map(p => [p.lat, p.lng])), wpts, dist, t0, t1 };
+}
+function haversine(a, b) {
+  const R = 6371000, r = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function fmtDuration(ms) {
+  const m = Math.round(ms / 60000), h = Math.floor(m / 60);
+  return h ? `${h}h ${pad(m % 60)}m` : `${m} min`;
+}
+function fmtClock(ts) { const d = new Date(ts); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function routeSub(g) {
+  if (!g) return '';
+  const bits = [t('km', (g.dist / 1000).toFixed(1))];
+  if (isFinite(g.t0)) bits.unshift(fmtDay(dkey(new Date(g.t0))) + ' · ' + fmtClock(g.t0) + '–' + fmtClock(g.t1));
+  if (isFinite(g.t0) && g.t1 > g.t0) bits.push(fmtDuration(g.t1 - g.t0));
+  return bits.join(' · ');
+}
+
+/* Rendering */
+function renderMap(trip) {
+  const routes = gpxFiles(trip).map(f => {
+    const g = mapState.gpx[f.id];
+    const off = mapState.hidden.has(String(f.id));
+    const sub = g ? routeSub(g) : mapState.failed[f.id] ? t('gpxFail') : t('gpxLoading');
+    return `
+      <div class="route-row ${off ? 'off' : ''}">
+        <span class="rr-swatch" style="background:${routeColour(trip, f.id)}" onclick="toggleRoute('${esc(f.id)}')"></span>
+        <span class="rr-main" onclick="focusRoute('${esc(f.id)}')">
+          <div class="rr-name">${esc(String(f.name || '').replace(/\.gpx$/i, ''))}</div>
+          <div class="rr-sub">${esc(sub)}</div>
+        </span>
+        <button class="small-btn warn" onclick="deleteRoute('${esc(f.id)}', this)">✕</button>
+      </div>`;
+  }).join('');
+  const cis = tripCheckins(trip);
+  let lastDay = '';
+  const ciRows = cis.map((c, i) => {
+    const d = c.at ? new Date(c.at) : null;
+    const day = d && !isNaN(d) ? dkey(d) : '';
+    const head = day && day !== lastDay ? `<div class="type-hint" style="margin:12px 0 0">${esc(fmtDay(day, true))}</div>` : '';
+    lastDay = day || lastDay;
+    return `${head}
+      <div class="ci-row">
+        <span class="ci-num">${i + 1}</span>
+        <span class="ci-main" onclick="focusCheckin('${esc(c.id)}')">
+          <div class="ci-note">${esc(c.note || '📍')}</div>
+          <div class="ci-time">${esc(d && !isNaN(d) ? fmtClock(d) : '')}</div>
+        </span>
+        <button class="icon-btn" onclick="openCheckinModal('${esc(trip.id)}', '${esc(c.id)}')">✎</button>
+      </div>`;
+  }).join('');
+  return `
+    <div class="card">
+      <div class="map-box ${mapState.picking ? 'picking' : ''}" id="map-slot"><div class="map-cross"></div></div>
+      ${mapState.picking ? `<div class="type-hint" style="margin-top:8px">${esc(t('pickHint'))}</div>
+        <div class="map-actions"><button class="btn secondary" onclick="cancelPick()">${esc(t('cancel'))}</button><button class="btn primary" onclick="confirmPick('${esc(trip.id)}')">${esc(t('save'))}</button></div>`
+      : `<div class="map-actions">
+        <button class="btn primary" onclick="checkInHere('${esc(trip.id)}')">${esc(t('checkinBtn'))}</button>
+      </div>
+      <button class="mini-add" style="margin-top:8px" onclick="startPick()">${esc(t('useCentre'))}</button>`}
+      <div class="section-title">${esc(t('checkins'))}</div>
+      ${ciRows || `<div class="type-hint">${esc(t('noCheckins'))}</div>`}
+      <div class="section-title">${esc(t('routes'))}</div>
+      <div class="type-hint">${esc(t('mapIntro'))}${routes ? ' ' + esc(t('hideShow')) : ''}</div>
+      ${routes || ''}
+      <button class="mini-add" style="margin-top:10px" onclick="pickGpx('${esc(trip.id)}')">${esc(t('addGpx'))}</button>
+    </div>
+    <input type="file" id="gpx-input" style="display:none" onchange="onGpxPicked(this)">`;
+}
+
+let leafletPromise = null;
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  if (leafletPromise) return leafletPromise;
+  leafletPromise = new Promise((resolve, reject) => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.crossOrigin = 'anonymous';
+    css.href = `https://unpkg.com/leaflet@${LEAFLET_VER}/dist/leaflet.css`;
+    document.head.appendChild(css);
+    const s = document.createElement('script');
+    s.crossOrigin = 'anonymous';
+    s.src = `https://unpkg.com/leaflet@${LEAFLET_VER}/dist/leaflet.js`;
+    s.onload = () => resolve();
+    s.onerror = () => { leafletPromise = null; s.remove(); reject(new Error('leaflet')); };
+    document.head.appendChild(s);
+  });
+  return leafletPromise;
+}
+
+async function mountMap(trip) {
+  try { await loadLeaflet(); }
+  catch {
+    const s = document.getElementById('map-slot');
+    if (s && !s.querySelector('.map-msg')) s.insertAdjacentHTML('beforeend', `<div class="map-msg">${esc(t('mapNeedNet'))}</div>`);
+    return;
+  }
+  const slot = document.getElementById('map-slot');
+  if (!slot) return;
+  if (!mapState.el) { mapState.el = document.createElement('div'); mapState.el.className = 'map-inner'; }
+  slot.insertBefore(mapState.el, slot.firstChild);
+  if (!mapState.map) {
+    mapState.map = L.map(mapState.el, { zoomControl: true, attributionControl: true }).setView([51.0, 1.5], 5);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19, subdomains: 'abcd', crossOrigin: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(mapState.map);
+    mapState.layers = L.layerGroup().addTo(mapState.map);
+  }
+  mapState.map.invalidateSize();
+  const fresh = mapState.tripId !== String(trip.id);
+  if (fresh) { mapState.tripId = String(trip.id); mapState.sig = ''; mapState.picking = false; }
+  drawMapData(trip, fresh);
+  loadRoutes(trip);
+}
+
+function drawMapData(trip, fit) {
+  if (!mapState.map) return;
+  const files = gpxFiles(trip);
+  const cis = tripCheckins(trip);
+  const sig = JSON.stringify([files.map(f => [f.id, !!mapState.gpx[f.id], mapState.hidden.has(String(f.id))]), cis.map(c => [c.id, c.lat, c.lng, c.note, c.at]), state.lang]);
+  if (sig === mapState.sig && !fit) return;
+  mapState.sig = sig;
+  const g = mapState.layers;
+  g.clearLayers();
+  const bounds = [];
+  files.forEach(f => {
+    const r = mapState.gpx[f.id];
+    if (!r || mapState.hidden.has(String(f.id))) return;
+    const col = routeColour(trip, f.id);
+    const label = esc(String(f.name || '').replace(/\.gpx$/i, '')) + '<br><small>' + esc(routeSub(r)) + '</small>';
+    r.segs.forEach(seg => {
+      L.polyline(seg, { color: col, weight: 4, opacity: 0.9 }).bindPopup(label).addTo(g);
+      seg.forEach(p => bounds.push(p));
+    });
+    const first = r.segs[0] && r.segs[0][0];
+    const lastSeg = r.segs[r.segs.length - 1];
+    const last = lastSeg && lastSeg[lastSeg.length - 1];
+    if (first) L.circleMarker(first, { radius: 6, color: 'white', weight: 2, fillColor: col, fillOpacity: 1 }).bindPopup(label).addTo(g);
+    if (last) L.circleMarker(last, { radius: 6, color: col, weight: 3, fillColor: 'white', fillOpacity: 1 }).bindPopup(label).addTo(g);
+    r.wpts.forEach(w => { L.circleMarker([w.lat, w.lng], { radius: 4, color: col, weight: 2, fillColor: 'white', fillOpacity: 1 }).bindPopup(esc(w.name || '')).addTo(g); bounds.push([w.lat, w.lng]); });
+  });
+  cis.forEach((c, i) => {
+    const icon = L.divIcon({ className: 'ci-pin', html: `<span><b>${i + 1}</b></span>`, iconSize: [24, 24], iconAnchor: [3, 27], popupAnchor: [9, -24] });
+    const d = c.at ? new Date(c.at) : null;
+    const when = d && !isNaN(d) ? fmtDay(dkey(d)) + ' · ' + fmtClock(d) : '';
+    L.marker([c.lat, c.lng], { icon }).bindPopup(`<b>${esc(c.note || '📍')}</b><br><small>${esc(when)}</small>`).addTo(g);
+    bounds.push([c.lat, c.lng]);
+  });
+  if (fit && bounds.length) mapState.map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+}
+
+async function loadRoutes(trip) {
+  const todo = gpxFiles(trip).filter(f => !mapState.gpx[f.id] && !mapState.loading[f.id] && !mapState.failed[f.id]);
+  if (!todo.length) return;
+  const hadAny = Object.keys(mapState.gpx).some(id => gpxFiles(trip).some(f => String(f.id) === id));
+  await Promise.all(todo.map(async f => {
+    mapState.loading[f.id] = true;
+    try {
+      let rec = await idbGet(f.id);
+      if (!rec) rec = await fetchFileRec(f.id);
+      mapState.gpx[f.id] = parseGpx(await rec.blob.text());
+    } catch (e) { mapState.failed[f.id] = true; }
+    finally { delete mapState.loading[f.id]; }
+  }));
+  if (state.route.tab === 'map' && String(state.route.tripId) === String(trip.id)) {
+    rerender();
+    drawMapData(trip, !hadAny && tripCheckins(trip).length === 0);
+  }
+}
+
+function toggleRoute(id) {
+  id = String(id);
+  if (mapState.hidden.has(id)) mapState.hidden.delete(id); else mapState.hidden.add(id);
+  render();
+}
+function focusRoute(id) {
+  const r = mapState.gpx[id];
+  if (!r || !mapState.map) return;
+  if (mapState.hidden.has(String(id))) { mapState.hidden.delete(String(id)); render(); }
+  const pts = [].concat(...r.segs, r.wpts.map(w => [w.lat, w.lng]));
+  if (pts.length) mapState.map.fitBounds(pts, { padding: [30, 30], maxZoom: 16 });
+  document.getElementById('map-slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function focusCheckin(id) {
+  const trip = tripById(state.route.tripId);
+  const c = trip && tripCheckins(trip).find(x => String(x.id) === String(id));
+  if (!c || !mapState.map) return;
+  mapState.map.setView([c.lat, c.lng], Math.max(mapState.map.getZoom(), 16));
+  mapState.layers.eachLayer(l => { if (l.getLatLng && !l.getRadius && l.getLatLng().lat === c.lat && l.getLatLng().lng === c.lng) l.openPopup(); });
+  document.getElementById('map-slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* GPX upload */
+let gpxTripId = null;
+function pickGpx(tripId) {
+  if (!getSyncUrl() || !navigator.onLine) { toast(t('onlineOnly')); return; }
+  gpxTripId = tripId;
+  const input = document.getElementById('gpx-input');
+  if (input) { input.value = ''; input.click(); }
+}
+async function onGpxPicked(input) {
+  const file = input.files && input.files[0];
+  if (!file || !gpxTripId) return;
+  if (file.size > 10 * 1024 * 1024) { toast(t('fileTooBig')); return; }
+  const tripId = gpxTripId;
+  let text, parsed;
+  try { text = await file.text(); parsed = parseGpx(text); }
+  catch { toast(t('notGpx')); return; }
+  const id = uid();
+  const mime = 'application/gpx+xml';
+  const name = /\.gpx$/i.test(file.name) ? file.name : (file.name || 'route') + '.gpx';
+  const base64 = btoa(unescape(encodeURIComponent(text)));
+  setSavingOverlay(true, t('uploading'));
+  try {
+    const data = await postRaw({ action: 'upload', item: { id, parent_id: GPX_PARENT, trip_id: tripId, name, mime }, data: base64 });
+    applyServerData(data);
+    const blob = new Blob([text], { type: mime });
+    await idbPut(id, { name, mime, blob });
+    mapState.gpx[id] = parsed;
+    toast(t('routeSaved'));
+  } catch (e) {
+    toast(t('saveFail'));
+  } finally {
+    setSavingOverlay(false);
+    render();
+    if (mapState.gpx[id]) focusRoute(id);
+  }
+}
+async function deleteRoute(id, btn) {
+  if (!btn.classList.contains('armed')) { btn.classList.add('armed'); btn.textContent = t('delConfirm'); return; }
+  await send([{ action: 'delete', kind: 'files', id }]);
+  await idbDel(id);
+  delete mapState.gpx[id];
+  toast(t('fileDeleted'));
+  render();
+}
+
+/* Check-ins */
+function checkInHere(tripId) {
+  if (!navigator.geolocation) { toast(t('gpsFail')); return; }
+  setSavingOverlay(true, t('locating'));
+  navigator.geolocation.getCurrentPosition(pos => {
+    setSavingOverlay(false);
+    const c = pos.coords;
+    if (mapState.map) mapState.map.setView([c.latitude, c.longitude], Math.max(mapState.map.getZoom(), 16));
+    openCheckinModal(tripId, null, { lat: c.latitude, lng: c.longitude, acc: Math.round(c.accuracy || 0) });
+  }, () => {
+    setSavingOverlay(false);
+    toast(t('gpsFail'));
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 });
+}
+function startPick() { mapState.picking = true; render(); }
+function cancelPick() { mapState.picking = false; render(); }
+function confirmPick(tripId) {
+  if (!mapState.map) return;
+  const c = mapState.map.getCenter();
+  mapState.picking = false;
+  openCheckinModal(tripId, null, { lat: c.lat, lng: c.lng, acc: null });
+}
+function localDT(d) { return dkey(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function openCheckinModal(tripId, id, pos) {
+  const trip = tripById(tripId);
+  const c = id && trip ? tripCheckins(trip).find(x => String(x.id) === String(id)) : null;
+  state.modal = { type: 'checkin', form: true, tripId, id: id || null, ci: c || null, pos: c ? { lat: c.lat, lng: c.lng, acc: c.acc } : pos };
+  render();
+  const el = document.getElementById('ci-note');
+  if (el && !id) el.focus();
+}
+function checkinForm(m) {
+  const c = m.ci || {};
+  const p = m.pos || {};
+  const at = c.at ? new Date(c.at) : new Date();
+  const mapsUrl = `https://maps.apple.com/?ll=${p.lat},${p.lng}&q=${encodeURIComponent(c.note || '📍')}`;
+  return `
+    <h3>${esc(m.id ? t('editCheckin') : t('newCheckin'))}</h3>
+    <div class="type-hint" style="margin-top:0">${esc(Number(p.lat).toFixed(5) + ', ' + Number(p.lng).toFixed(5))}${p.acc ? ' · ' + esc(t('accuracy', p.acc)) : ''}
+      · <a href="${esc(mapsUrl)}" target="_blank" rel="noopener">${esc(t('openMaps'))}</a></div>
+    <div class="field"><label>${esc(t('ciNote'))}</label><input type="text" id="ci-note" placeholder="${esc(t('ciNotePh'))}" value="${esc(c.note || '')}"></div>
+    <div class="field"><label>${esc(t('ciWhen'))}</label><input type="datetime-local" id="ci-at" value="${esc(localDT(isNaN(at) ? new Date() : at))}"></div>
+    ${modalButtons('saveCheckin()', m.id ? deleteButton('deleteCheckin') : '')}`;
+}
+async function saveCheckin() {
+  if (state.saving) return;
+  const m = state.modal;
+  if (!m || !m.pos) return;
+  const whenRaw = val('ci-at');
+  const when = whenRaw ? new Date(whenRaw) : new Date();
+  const payload = JSON.stringify({
+    lat: Number(Number(m.pos.lat).toFixed(6)), lng: Number(Number(m.pos.lng).toFixed(6)),
+    acc: m.pos.acc || null, note: val('ci-note'), at: (isNaN(when) ? new Date() : when).toISOString()
+  });
+  const base = m.ci ? m.ci.raw : { id: uid(), parent_id: CHECKIN_PARENT, trip_id: m.tripId, mime: CHECKIN_MIME, size: 0, drive_id: '' };
+  const item = { ...base, name: payload };
+  await saving(async () => {
+    await send([{ action: m.id ? 'update' : 'add', kind: 'files', item }]);
+    state.modal = null;
+    toast(m.id ? t('saved') : t('checkedIn'));
+    render();
+  });
+}
+async function deleteCheckin() {
+  const m = state.modal;
+  if (!m || !m.id) return;
+  await saving(async () => {
+    await send([{ action: 'delete', kind: 'files', id: m.id }]);
+    state.modal = null;
+    toast(t('deleted'));
+    render();
+  });
+}
+
 /* ---------------- modals ---------------- */
 function renderModal() {
   const m = state.modal;
@@ -1975,6 +2549,7 @@ function renderModal() {
   else if (m.type === 'item') inner = itemForm(m);
   else if (m.type === 'expense') inner = expenseForm(m);
   else if (m.type === 'file') inner = fileViewer(m);
+  else if (m.type === 'checkin') inner = checkinForm(m);
   return `<div class="backdrop" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()">${inner}</div></div>`;
 }
 function closeModal(e) {
@@ -2048,7 +2623,7 @@ async function deleteTrip() {
   const changes = [{ action: 'delete', kind: 'trips', id }]
     .concat(D().packing.filter(x => String(x.trip_id) === String(id)).map(x => ({ action: 'delete', kind: 'packing', id: x.id })))
     .concat(D().expenses.filter(x => String(x.trip_id) === String(id)).map(x => ({ action: 'delete', kind: 'expenses', id: x.id })))
-    .concat(D().files.filter(x => String(x.trip_id) === String(id) && String(x.parent_id) === String(id)).map(x => ({ action: 'delete', kind: 'files', id: x.id })));
+    .concat(D().files.filter(x => String(x.trip_id) === String(id) && (String(x.parent_id) === String(id) || isMapFile(x))).map(x => ({ action: 'delete', kind: 'files', id: x.id })));
   await saving(async () => {
     await send(changes);
     state.modal = null;
@@ -2317,24 +2892,26 @@ async function openFile(id) {
   if (!rec) {
     if (!getSyncUrl()) { toast(t('fileFail')); return; }
     setSavingOverlay(true, t('loadingFile'));
-    try {
-      const sep = getSyncUrl().indexOf('?') >= 0 ? '&' : '?';
-      const res = await fetch(getSyncUrl() + sep + 'action=file&id=' + encodeURIComponent(id), { redirect: 'follow' });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error);
-      const bin = atob(data.data);
-      const bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      rec = { name: data.name, mime: data.mime, blob: new Blob([bytes], { type: data.mime }) };
-      await idbPut(id, rec);
-    } catch (e) {
-      setSavingOverlay(false); toast(t('fileFail')); return;
-    }
+    try { rec = await fetchFileRec(id); }
+    catch (e) { setSavingOverlay(false); toast(t('fileFail')); return; }
     setSavingOverlay(false);
   }
   const url = URL.createObjectURL(rec.blob);
   state.modal = { type: 'file', name: rec.name || meta.name, mime: rec.mime || meta.mime || '', url };
   render();
+}
+// Download a file from Drive (via Apps Script) and keep it in IndexedDB
+async function fetchFileRec(id) {
+  const sep = getSyncUrl().indexOf('?') >= 0 ? '&' : '?';
+  const res = await fetch(getSyncUrl() + sep + 'action=file&id=' + encodeURIComponent(id), { redirect: 'follow' });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  const bin = atob(data.data);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const rec = { name: data.name, mime: data.mime, blob: new Blob([bytes], { type: data.mime }) };
+  await idbPut(id, rec);
+  return rec;
 }
 function fileViewer(m) {
   const isImg = /^image\//.test(m.mime);

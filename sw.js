@@ -5,8 +5,12 @@
 //     Updates ship the moment they're pushed; users don't have to clear caches.
 //   - Other assets (icon, manifest, etc): cache-first → fast, offline-friendly.
 //   - Apps Script API: never touched by SW — always live.
+//   - Map library (Leaflet on unpkg): cache-first.
+//   - Map tiles (CARTO): cache-first in their own cache (capped), so maps you've looked at work offline.
 
-const CACHE_VERSION = 'travel-v1';
+const CACHE_VERSION = 'travel-v3';  // v3 · 2026-11-26
+const TILE_CACHE = 'travel-tiles';
+const TILE_MAX = 2000;
 const ASSETS = ['./icon.png'];
 
 self.addEventListener('install', (e) => {
@@ -20,7 +24,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
-        keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))
+        keys.filter((k) => k !== CACHE_VERSION && k !== TILE_CACHE).map((k) => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );
@@ -36,6 +40,28 @@ self.addEventListener('fetch', (e) => {
   }
 
   if (e.request.method !== 'GET') return;
+
+  // Leaflet library + map tiles — cache-first
+  const isLib = url.hostname === 'unpkg.com' && url.pathname.startsWith('/leaflet@');
+  const isTile = url.hostname.endsWith('basemaps.cartocdn.com');
+  if (isLib || isTile) {
+    const cacheName = isTile ? TILE_CACHE : CACHE_VERSION;
+    e.respondWith(
+      caches.open(cacheName).then((c) =>
+        c.match(e.request).then((hit) =>
+          hit ||
+          fetch(e.request).then((res) => {
+            if (res && res.ok) {
+              c.put(e.request, res.clone()).then(() => { if (isTile) trimTiles(c); });
+            }
+            return res;
+          })
+        )
+      )
+    );
+    return;
+  }
+
   if (url.origin !== self.location.origin) return;
 
   const isHtml =
@@ -74,3 +100,12 @@ self.addEventListener('fetch', (e) => {
     )
   );
 });
+
+let trimCount = 0;
+function trimTiles(c) {
+  if (++trimCount % 100) return;
+  c.keys().then((keys) => {
+    const extra = keys.length - TILE_MAX;
+    for (let i = 0; i < extra; i++) c.delete(keys[i]);
+  });
+}
