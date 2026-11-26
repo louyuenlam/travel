@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Travel">
+<meta name="theme-color" content="#f7f1e8">
+<link rel="apple-touch-icon" href="./icon.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon.png">
+<title>Travel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Cream + dusty blue palette */
+  --cream:        #f7f1e8;
+  --cream-soft:   #fdf9f3;
+  --cream-dark:   #ece4d4;
+  --ink:          #2b3142;
+  --ink-soft:     #4a5067;
+  --muted:        #8a8a8a;
+  --border:       #e6dfd0;
+
+  --accent:       #a8b8d4;
+  --accent-dark:  #5a7196;
+  --accent-tint:  #e8eef7;
+
+  --warn:         #c97a6b;
+  --warn-tint:    #f5e3df;
+  --sage:         #9eb89a;
+  --sage-tint:    #e3ede1;
+
+  /* Per-person colours (chips) */
+  --p-jess:       #c97a6b;
+  --p-jess-tint:  #f5e3df;
+  --p-amus:       #2f6b4f;
+  --p-amus-tint:  #dcebe2;
+  --p-mum:        #b08bb5;
+  --p-mum-tint:   #efe6f1;
+  --p-house:      #7d8d6e;
+  --p-house-tint: #e6ebde;
+
+  --p-dad:        #6b8a8c;
+  --p-dad-tint:   #dfe9ea;
+  --p-anny:       #c2577f;
+  --p-anny-tint:  #f6e1ea;
+  --p-eliot:      #8b5e3c;
+  --p-eliot-tint: #efe2d8;
+
+  --p-milk:       #b89a7a;
+  --p-milk-tint:  #f0e8dc;
+  --p-bb:         #d49775;
+  --p-bb-tint:    #f5e3d4;
+  --p-cilla:      #c4a96a;
+  --p-cilla-tint: #f1e8c9;
+
+  --shadow:       0 1px 2px rgba(43, 49, 66, 0.04), 0 2px 8px rgba(43, 49, 66, 0.04);
+  --shadow-lift:  0 2px 4px rgba(43, 49, 66, 0.06), 0 6px 18px rgba(43, 49, 66, 0.08);
+  --radius:       16px;
+  --radius-sm:    10px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Chinese mode: swap font stacks */
+body.lang-zh {
+  font-family: 'Noto Sans TC', 'Manrope', system-ui, sans-serif;
+}
+body.lang-zh .brand,
+body.lang-zh .card h2,
+body.lang-zh .modal h3,
+body.lang-zh .day-editor .day-title,
+body.lang-zh .bills-section-head,
+body.lang-zh .cal-nav .month-label,
+body.lang-zh .datestamp .day,
+body.lang-zh .empty-state em,
+body.lang-zh .amount {
+  font-family: 'Noto Serif TC', 'Fraunces', serif;
+}
+body.lang-zh .brand em,
+body.lang-zh .card h2 em,
+body.lang-zh .modal h3 em,
+body.lang-zh .cal-nav .month-label em,
+body.lang-zh .empty-state em {
+  /* Chinese has no italic — use weight + colour instead */
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Language toggle pill */
+.lang-toggle {
+  display: inline-flex;
+  background: var(--cream-dark);
+  border-radius: 999px;
+  padding: 3px;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.lang-toggle button {
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--muted);
+  transition: all 0.2s;
+  min-width: 28px;
+}
+.lang-toggle button.active {
+  background: var(--cream-soft);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow);
+}
+
+body::before, body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  background: radial-gradient(circle at 15% 10%, var(--accent-tint), transparent 55%);
+  opacity: 0.6;
+}
+body::after {
+  background: radial-gradient(circle at 85% 90%, var(--sage-tint), transparent 55%);
+  opacity: 0.45;
+}
+
+input, textarea, select { -webkit-user-select: text; user-select: text; }
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea, select { font-family: inherit; font-size: 16px; color: var(--ink); }
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top) + 18px)
+    calc(env(safe-area-inset-right) + 18px)
+    calc(env(safe-area-inset-bottom) + 32px)
+    calc(env(safe-area-inset-left) + 18px);
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+.brand {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+}
+.brand em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent-dark);
+}
+.datestamp {
+  text-align: right;
+  flex-shrink: 0;
+}
+.datestamp .month {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.datestamp .day {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+/* ---------- Sync status pill ---------- */
+.sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--cream-dark);
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.sync-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.sync-pill.ok { background: var(--sage-tint); color: var(--sage); }
+.sync-pill.ok .dot { background: var(--sage); }
+.sync-pill.syncing { background: var(--accent-tint); color: var(--accent-dark); }
+.sync-pill.syncing .dot { background: var(--accent-dark); animation: pulse 1s infinite; }
+.sync-pill.err { background: var(--warn-tint); color: var(--warn); }
+.sync-pill.err .dot { background: var(--warn); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.sync-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+.sync-row .sync-pill {
+  margin-bottom: 0;
+}
+.version-tag {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+/* ---------- Tab bar ---------- */
+.tabbar {
+  display: flex;
+  background: var(--cream-dark);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+  margin-bottom: 22px;
+}
+.tabbar button {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: all 0.2s;
+}
+.tabbar button.active {
+  background: var(--cream-soft);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow);
+}
+.tab-badge {
+  display: inline-block;
+  margin-left: 4px;
+  background: var(--warn);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  vertical-align: 1px;
+}
+
+/* ---------- View transitions ---------- */
+.view {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.card h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent-dark);
+}
+.card .subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* ---------- Calendar ---------- */
+.cal-toggle {
+  display: flex;
+  background: var(--cream-dark);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 14px;
+  gap: 2px;
+}
+.cal-toggle button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  transition: all 0.2s;
+}
+.cal-toggle button.active {
+  background: var(--cream-soft);
+  color: var(--accent-dark);
+  box-shadow: var(--shadow);
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-nav .nav-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--cream-soft);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  color: var(--ink-soft);
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-nav .nav-btn:active { background: var(--cream-dark); }
+.cal-nav .month-label {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+.cal-nav .month-label em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent-dark);
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.cal-weekdays div {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 4px 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: var(--cream-soft);
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 2px;
+  position: relative;
+  font-size: 13px;
+  color: var(--ink);
+  transition: all 0.15s;
+  overflow: hidden;
+}
+.cal-day.future { opacity: 0.7; }
+.cal-day.other-month { opacity: 0.3; }
+.cal-day.today {
+  border: 2px solid var(--ink);
+  font-weight: 700;
+}
+.cal-day.has-items {
+  background: linear-gradient(135deg, var(--accent-tint), white);
+}
+.cal-day.selected {
+  background: var(--accent-dark);
+  color: white;
+}
+.cal-day:active { transform: scale(0.96); }
+
+.cal-day .day-num { font-weight: 600; line-height: 1; }
+.cal-day .dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
+}
+.cal-day .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent-dark);
+}
+/* !important: each dot carries its person colour inline, which would otherwise win */
+.cal-day.selected .dot { background: white !important; }
+
+/* Month navigation slide — subtle, direction matches the arrow tapped */
+@keyframes calSlideFromRight {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes calSlideFromLeft {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.cal-main.slide-in-right { animation: calSlideFromRight 0.22s ease-out; }
+.cal-main.slide-in-left  { animation: calSlideFromLeft  0.22s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-main.slide-in-right,
+  .cal-main.slide-in-left { animation: none; }
+}
+
+/* Inline event titles — hidden on phone, shown on tablets/desktop */
+.cal-day .cal-items { display: none; }
+
+/* ---------- Wide screens (iPad / desktop): two-pane layout ---------- */
+@media (min-width: 820px) {
+  .app { max-width: 1180px; }
+
+  .cal-card { padding: 22px; }
+
+  .cal-panes {
+    display: grid;
+    grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .cal-side {
+    position: sticky;
+    top: 12px;
+    border-left: 1px solid var(--border);
+    padding-left: 22px;
+    min-height: 200px;
+  }
+  .cal-side .day-editor { margin-top: 0; border-top: none; padding-top: 0; }
+
+  /* Roomier day cells that fit text */
+  .cal-grid { gap: 6px; }
+  .cal-day {
+    aspect-ratio: auto;
+    min-height: 96px;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 6px 6px 4px;
+    font-size: 14px;
+  }
+  .cal-day .day-num { text-align: left; font-size: 14px; }
+  .cal-day .dots { display: none; }
+  .cal-day .cal-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 5px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .cal-day .cal-item {
+    display: block;
+    width: 100%;
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: left;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border-left: 3px solid var(--accent-dark);
+    background: rgba(255,255,255,0.72);
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cal-day .cal-more {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: left;
+    padding-left: 4px;
+  }
+  .cal-day.selected .cal-item {
+    background: rgba(255,255,255,0.9);
+  }
+  .cal-day.selected .cal-more { color: rgba(255,255,255,0.85); }
+
+  /* Forms and modals get more breathing room */
+  .modal { max-width: 620px; }
+}
+
+/* ---------- Day editor ---------- */
+.day-editor {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.day-editor .day-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+.day-editor .empty {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* ---------- Item row (event/bill in the day editor or list) ---------- */
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  margin-bottom: 8px;
+}
+.item-row.paid {
+  background: linear-gradient(135deg, var(--sage-tint), white);
+}
+.item-row .item-main {
+  flex: 1;
+  min-width: 0;
+}
+.item-row .item-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  word-break: break-word;
+}
+.item-row .item-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.item-row .item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ---------- Assignee chip ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.chip::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.chip.jess  { background: var(--p-jess-tint);  color: var(--p-jess); }
+.chip.amus  { background: var(--p-amus-tint);  color: var(--p-amus); }
+.chip.mum   { background: var(--p-mum-tint);   color: var(--p-mum); }
+.chip.house { background: var(--p-house-tint); color: var(--p-house); }
+.chip.dad   { background: var(--p-dad-tint);   color: var(--p-dad); }
+.chip.anny  { background: var(--p-anny-tint);  color: var(--p-anny); }
+.chip.eliot { background: var(--p-eliot-tint); color: var(--p-eliot); }
+.chip.milk  { background: var(--p-milk-tint);  color: var(--p-milk); }
+.chip.bb    { background: var(--p-bb-tint);    color: var(--p-bb); }
+.chip.cilla { background: var(--p-cilla-tint); color: var(--p-cilla); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+.btn.primary {
+  background: var(--accent-dark);
+  color: white;
+}
+.btn.primary:active { background: var(--ink); }
+.btn.secondary {
+  background: white;
+  border: 1px solid var(--accent);
+  color: var(--accent-dark);
+}
+.btn.secondary:active { background: var(--accent-tint); }
+.btn.danger {
+  background: white;
+  border: 1px solid var(--warn);
+  color: var(--warn);
+}
+.btn.danger:active { background: var(--warn-tint); }
+.btn.full { width: 100%; }
+
+.icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--cream-soft);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:active { background: var(--cream-dark); }
+.icon-btn.warn { color: var(--warn); }
+
+.add-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--accent);
+  background: transparent;
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.add-btn:active { background: var(--accent-tint); }
+
+/* ---------- Timezone picker ---------- */
+.tz-button {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  font-size: 14px;
+  text-align: left;
+  min-height: 44px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tz-button:active { background: var(--cream-soft); }
+.tz-button .placeholder { color: var(--muted); }
+.tz-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  padding: 4px;
+}
+.tz-list .tz-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--ink);
+  background: transparent;
+}
+.tz-list .tz-item:active,
+.tz-list .tz-item.active { background: var(--accent-tint); color: var(--accent-dark); }
+.tz-list .tz-section {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 6px 10px 4px;
+}
+.tz-list .tz-empty {
+  padding: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- Travel block ---------- */
+.travel-block {
+  background: var(--cream-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.travel-block .block-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--accent-dark);
+  margin-bottom: 8px;
+}
+
+.travel-row .item-meta svg {
+  vertical-align: -2px;
+  margin-right: 3px;
+}
+
+/* ---------- Modal ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 49, 66, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  background: var(--cream-soft);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 380px;
+  padding: 22px;
+  animation: scaleIn 0.25s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.modal h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.modal h3 em { font-style: italic; color: var(--accent-dark); font-weight: 500; }
+
+/* View-only modal */
+.modal h3.view-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-style: italic;
+}
+.modal h3.view-title svg {
+  flex-shrink: 0;
+}
+.view-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px;
+  background: var(--cream-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.view-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.view-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.view-value {
+  font-size: 14px;
+  color: var(--ink);
+  word-break: break-word;
+}
+.view-value .chip {
+  font-size: 11px;
+  padding: 3px 9px;
+}
+.view-actions {
+  gap: 8px;
+}
+.item-row {
+  cursor: pointer;
+}
+.item-row:active .item-main {
+  opacity: 0.7;
+}
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="date"],
+.field input[type="time"],
+.field input[type="url"],
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: white;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px;
+  transition: border-color 0.2s;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--accent);
+}
+.field textarea { min-height: 70px; resize: vertical; }
+.field .chip-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.field .chip-picker button {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: white;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.field .chip-picker button.active {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: white;
+}
+.field .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.field .checkbox-row input[type="checkbox"] {
+  width: 20px; height: 20px;
+  -webkit-appearance: auto; appearance: auto;
+}
+.field .checkbox-row span { font-size: 14px; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.modal-actions .btn { flex: 1; }
+
+/* ---------- Settings sections ---------- */
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 22px 0 8px;
+  padding-left: 4px;
+}
+
+.field .help {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.field .help code {
+  background: var(--cream-dark);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.danger-card {
+  border-color: var(--warn);
+  background: linear-gradient(135deg, var(--warn-tint), white);
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 92px);
+  left: 50%;
+  transform: translateX(-50%) translateY(60px) scale(0.92);
+  background: var(--ink);
+  color: var(--cream);
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 200;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+  max-width: 90vw;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0) scale(1);
+  opacity: 1;
+}
+.toast.error {
+  background: var(--warn);
+}
+
+/* ---------- Saving overlay ---------- */
+#saving-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 49, 66, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#saving-overlay .saving-pill {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 16px 30px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+#saving-overlay .spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Bills list ---------- */
+.bills-section-head {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin: 14px 0 8px;
+}
+.empty-state {
+  text-align: center;
+  padding: 30px 18px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.empty-state em {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent-dark);
+}
+
+.amount {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.amount.paid { color: var(--sage); text-decoration: line-through; opacity: 0.7; }
+
+/* ---------- Backup banner ---------- */
+.backup-banner {
+  background: linear-gradient(135deg, var(--warn-tint), white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.backup-banner button {
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+.backup-banner .dismiss {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+/* ================= Travel app additions ================= */
+.app-switch {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-left: 8px; padding: 6px 12px; border-radius: 999px;
+  background: var(--cream-dark); color: var(--accent-dark);
+  font-size: 12px; font-weight: 600; text-decoration: none; vertical-align: middle;
+}
+.brand-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.brand-row .lang-toggle { margin-top: 0; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; padding: 4px 0 12px;
+  color: var(--accent-dark); font-size: 14px; font-weight: 600; cursor: pointer;
+}
+
+/* Trip cards on the home screen */
+.trip-card {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent-tint), white);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px; margin-bottom: 12px; box-shadow: var(--shadow);
+  font: inherit; color: var(--ink);
+}
+.trip-card.past { background: white; opacity: 0.75; }
+.trip-card .tc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.trip-card .tc-name { font-family: 'Fraunces', 'Noto Serif TC', serif; font-size: 20px; font-weight: 600; line-height: 1.2; }
+.trip-card .tc-count { font-size: 12px; font-weight: 700; color: var(--accent-dark); white-space: nowrap; }
+.trip-card .tc-sub { color: var(--ink-soft); font-size: 13px; margin-top: 4px; }
+.trip-card .tc-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.stat-pill {
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  background: rgba(255,255,255,0.8); border: 1px solid var(--border); color: var(--ink-soft);
+}
+
+/* Trip header */
+.trip-head h2 {
+  font-family: 'Fraunces', 'Noto Serif TC', serif; font-size: 26px; font-weight: 600;
+  line-height: 1.15; margin: 0 0 6px;
+}
+.trip-head .th-sub { color: var(--ink-soft); font-size: 14px; }
+.trip-head .th-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.trip-head .th-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+/* Itinerary */
+.day-block { margin-bottom: 18px; }
+.day-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 8px;
+}
+.day-head .dh-date { font-family: 'Fraunces', 'Noto Serif TC', serif; font-style: italic; font-size: 18px; font-weight: 500; }
+.day-head .dh-num { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.trip-row {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left;
+  background: white; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 11px 12px; margin-bottom: 8px; cursor: pointer; font: inherit; color: var(--ink);
+}
+.trip-row:active { background: var(--cream-soft); }
+.trip-row.soft { background: var(--cream-soft); }
+.trip-ico {
+  flex: 0 0 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  background: var(--accent-tint); color: var(--accent-dark);
+}
+.trip-ico.stay { background: var(--sage-tint); color: #5d7a58; }
+.trip-ico.activity { background: var(--warn-tint); color: var(--warn); }
+.trip-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.trip-time { font-size: 12px; font-weight: 700; color: var(--accent-dark); font-variant-numeric: tabular-nums; }
+.trip-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.trip-sub { font-size: 12px; color: var(--ink-soft); line-height: 1.4; word-break: break-word; }
+.ref-pill {
+  display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+  padding: 2px 8px; border-radius: 6px; background: var(--cream-dark); color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.mini-add {
+  width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px dashed var(--accent);
+  background: transparent; color: var(--accent-dark); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* Tickets */
+.ticket-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; background: white; }
+.ticket-card .tk-head { display: flex; gap: 10px; align-items: flex-start; }
+.ticket-card .tk-ref { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.ticket-card .tk-ref .ref-big { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+.file-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 10px;
+  border-radius: 8px; background: var(--cream-soft); border: 1px solid var(--border);
+}
+.file-row .fr-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; color: var(--accent-dark); }
+.file-row .fr-size { font-size: 11px; color: var(--muted); }
+.small-btn {
+  padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: white;
+  font-size: 12px; font-weight: 600; color: var(--accent-dark); cursor: pointer;
+}
+.small-btn.warn { color: var(--warn); }
+.file-viewer img { max-width: 100%; border-radius: 8px; display: block; margin: 0 auto; }
+.file-viewer iframe { width: 100%; height: 60vh; border: 1px solid var(--border); border-radius: 8px; background: white; }
+
+/* Packing */
+.progress { height: 8px; border-radius: 999px; background: var(--cream-dark); overflow: hidden; margin: 6px 0 4px; }
+.progress > div { height: 100%; background: var(--sage); border-radius: 999px; transition: width 0.3s; }
+.pack-row {
+  display: flex; align-items: center; gap: 10px; padding: 9px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.pack-row:last-child { border-bottom: none; }
+.pack-check {
+  flex: 0 0 24px; height: 24px; border-radius: 7px; border: 2px solid var(--accent);
+  background: white; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 14px; font-weight: 700; cursor: pointer; padding: 0;
+}
+.pack-check.on { background: var(--sage); border-color: var(--sage); }
+.pack-name { flex: 1; font-size: 15px; cursor: pointer; }
+.pack-row.done .pack-name { text-decoration: line-through; color: var(--muted); }
+.pack-x { background: none; border: none; color: var(--muted); font-size: 16px; padding: 4px 6px; cursor: pointer; }
+.pack-add { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 14px; }
+.pack-add .row2 { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; }
+.pack-add select, .pack-add input {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: white; min-height: 44px; box-sizing: border-box; -webkit-appearance: none;
+}
+.who-tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--cream-dark); color: var(--ink-soft); }
+
+/* Budget */
+.money-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.money-tile { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; background: var(--cream-soft); }
+.money-tile .mt-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.money-tile .mt-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.money-tile .mt-sub { font-size: 12px; color: var(--ink-soft); margin-top: 4px; line-height: 1.5; }
+.settle { margin-top: 12px; padding: 12px; border-radius: var(--radius-sm); background: var(--sage-tint); font-size: 14px; line-height: 1.6; }
+.exp-amount { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.field-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; }
+.field-row .field { min-width: 0; }
+.field-row input, .field-row select { min-width: 0; max-width: 100%; }
+.field select {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: white; min-height: 44px; box-sizing: border-box; font-size: 16px;
+}
+.type-hint { font-size: 12px; color: var(--muted); margin-top: -4px; margin-bottom: 10px; }
+.delete-link {
+  display: block; width: 100%; margin-top: 14px; padding: 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--warn); background: white; color: var(--warn); font-weight: 600; font-size: 14px; cursor: pointer;
+}
+.delete-link.armed { background: var(--warn); color: white; }
+.tabbar.four button { font-size: 13px; padding-left: 4px; padding-right: 4px; }
+
+@media (min-width: 820px) {
+  .trip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+}
+
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+/* ============================================================
+ * TRAVEL — trip planner that shares data with the Family Calendar.
+ * Same Google Sheet + Apps Script. Transport, stays and activities are
+ * ordinary calendar events, so they appear in the family calendar and on
+ * phones automatically. Trips, packing, expenses and files live in their
+ * own sheets.
+ * ============================================================ */
+const APP_VERSION = 'v1 · 2026-11-26';
+
+const LS = {
+  syncUrl: 'travelSyncUrl_v1',
+  cache:   'familyTripsCache_v1',
+  pending: 'familyTripsPending_v1',
+  currency:'familyTripsCurrency_v1'
+};
+const LANG_KEY = 'travelLang_v1';
+// Same Apps Script as the family calendar: both apps read and write the same Google Sheet.
+const DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbzAG9sYFqzF2HgmELrdxShpKC90tAm2fBgjFsfavfPAhmitzlffgyARU0yt63syXfTZMA/exec';
+
+const PEOPLE = [
+  { id: 'jess',  en: 'Jessica', zh: 'Jessica' },
+  { id: 'amus',  en: 'Amus',    zh: 'Amus' },
+  { id: 'mum',   en: 'Mum',     zh: '媽媽' },
+  { id: 'dad',   en: 'Dad',     zh: '爸爸' },
+  { id: 'anny',  en: 'Anny',    zh: 'Anny' },
+  { id: 'eliot', en: 'Eliot',   zh: 'Eliot' }
+];
+const DEFAULT_TRAVELLERS = ['jess', 'amus'];
+const DEFAULT_RECIPIENTS = ['jess', 'amus', 'mum', 'dad'];
+const CURRENCIES = ['GBP', 'EUR', 'USD', 'HKD', 'JPY', 'CHF'];
+const CUR_SYMBOL = { GBP: '£', EUR: '€', USD: '$', HKD: 'HK$', JPY: '¥', CHF: 'CHF ' };
+const TRAVEL_METHODS = ['plane', 'train', 'bus', 'drive', 'ferry', 'other'];
+const PACK_CATS = ['documents', 'electronics', 'toiletries', 'clothes', 'other'];
+const EXP_CATS = ['transport', 'stay', 'food', 'activities', 'shopping', 'other'];
+const COMMON_TZ = ['Europe/London', 'Europe/Paris', 'Europe/Brussels', 'Europe/Amsterdam', 'Europe/Berlin',
+  'Europe/Madrid', 'Europe/Rome', 'Europe/Dublin', 'Europe/Helsinki', 'America/New_York', 'America/Los_Angeles',
+  'Asia/Hong_Kong', 'Asia/Tokyo', 'Asia/Singapore', 'Asia/Taipei', 'Asia/Seoul', 'Asia/Bangkok', 'Australia/Sydney'];
+
+const I18N = {
+  en: {
+    brand1: 'Travel ', brand2: 'plans', toCalendar: '← Family calendar', allTrips: '← All trips',
+    upcoming: 'Upcoming', past: 'Past trips', newTrip: '+ New trip', noTrips: 'No trips yet. Add your first one.',
+    inDays: n => n === 1 ? 'Tomorrow' : `In ${n} days`, today: 'Today', onTrip: 'On the trip', done: 'Done',
+    nights: n => n === 1 ? '1 night' : `${n} nights`, items: n => `${n} bookings`, packed: (a, b) => `${a}/${b} packed`,
+    tabItin: 'Itinerary', tabTickets: 'Tickets', tabPack: 'Packing', tabBudget: 'Budget',
+    day: n => `Day ${n}`, addHere: '+ Add to this day', nothingDay: 'Nothing planned yet',
+    checkin: 'Check-in', staying: 'Staying', checkout: 'Check-out', arrives: 'arrives',
+    tTransport: 'Transport', tStay: 'Stay', tActivity: 'Activity',
+    fTripName: 'Trip name', fDest: 'Destination', fStart: 'First day', fEnd: 'Last day', fTravellers: "Who's going",
+    fNotes: 'Notes (optional)', fTitle: 'Title', fTitleOpt: 'Title (optional)', fMethod: 'Method', fFrom: 'From', fTo: 'To',
+    fDepDate: 'Departure date', fDepTime: 'Departure time', fArrDate: 'Arrival date', fArrTime: 'Arrival time',
+    fFromTz: 'Departure time zone', fToTz: 'Arrival time zone',
+    fHotel: 'Place to stay', fAddress: 'Address (optional)', fCheckin: 'Check-in date', fCheckout: 'Check-out date',
+    fDate: 'Date', fStartTime: 'Start time (optional)', fEndTime: 'End time (optional)', fLocation: 'Location (optional)',
+    fRef: 'Booking reference (optional)', fSync: 'Send to phone calendar', fSendTo: 'Send phone alert to',
+    fAlarms: 'Alarms (tap as many as you like)',
+    m_plane: 'Plane', m_train: 'Train', m_bus: 'Bus', m_drive: 'Drive', m_ferry: 'Ferry', m_other: 'Other',
+    a0: 'At time', a0day: 'Morning of (9am)', a15: '15 min before', a30: '30 min before', a60: '1 hour before',
+    a120: '2 hours before', a1440: '1 day before', a2880: '2 days before', a10080: '1 week before',
+    save: 'Save', cancel: 'Cancel', close: 'Close', del: 'Delete', delConfirm: 'Tap again to delete',
+    addItem: 'Add to trip', editItem: 'Edit', newTripT: 'New trip', editTrip: 'Edit trip',
+    delTripNote: 'Deletes the trip, its packing list, expenses and files. Transport, stays and activities are kept (they are shared with the family calendar).',
+    tkIntro: 'Booking numbers and tickets for every booking. Files you open are kept on this phone for offline use.',
+    noRef: 'No booking reference', copy: 'Copy', copied: 'Copied', addFile: '+ Add ticket / file', otherDocs: 'Other documents',
+    otherDocsHint: 'Passport copies, insurance, anything not tied to one booking.', open: 'Open / save',
+    fileTooBig: 'File is too large (max 10 MB)', uploading: 'Uploading…', fileSaved: 'File added', fileDeleted: 'File removed',
+    loadingFile: 'Opening…', fileFail: 'Could not open the file — check your connection', offlineSaved: 'Saved for offline',
+    packTitle: 'Packing list', starter: 'Add a starter list', packAdd: 'Add', packPlaceholder: 'Add an item…', shared: 'Shared',
+    c_documents: 'Documents', c_electronics: 'Electronics', c_toiletries: 'Toiletries', c_clothes: 'Clothes', c_other: 'Other',
+    noPack: 'Nothing on the list yet.',
+    budgetTitle: 'Spending', addExpense: '+ Add expense', noExp: 'No expenses yet.', total: 'Total',
+    paidBy: 'Paid by', splitWith: 'Split between', amount: 'Amount', currency: 'Currency', category: 'Category',
+    e_transport: 'Transport', e_stay: 'Stay', e_food: 'Food & drink', e_activities: 'Activities', e_shopping: 'Shopping', e_other: 'Other',
+    owes: (a, b, x) => `${a} owes ${b} ${x}`, allSquare: 'All square — nobody owes anything.',
+    paid: (n, x) => `${n} paid ${x}`, share: x => `share ${x}`,
+    newExpense: 'New expense', editExpense: 'Edit expense',
+    syncIdle: 'Add the sync URL in Sync settings', syncing: 'Syncing…', synced: 'Synced', saving: 'Saving…',
+    offline: 'Offline — using saved copy', queued: 'Saved on phone — will sync later', savingBtn: 'Saving…',
+    saved: 'Saved', deleted: 'Deleted', saveFail: 'Save failed — try again', needTitle: 'Please add a title',
+    needDates: 'Please add the dates', endBeforeStart: 'Last day is before the first day', needAmount: 'Please add an amount',
+    syncUrlLabel: 'Apps Script sync URL', syncUrlHint: 'The Apps Script address shared with the family calendar. Already filled in.',
+    settings: 'Sync settings', untitled: '(untitled)', onlineOnly: 'You need to be online for this'
+  },
+  zh: {
+    brand1: '旅行', brand2: '計劃', toCalendar: '← 家庭日曆', allTrips: '← 所有旅程',
+    upcoming: '即將出發', past: '過往旅程', newTrip: '+ 新旅程', noTrips: '仲未有旅程，加第一個啦。',
+    inDays: n => n === 1 ? '聽日出發' : `${n} 日後出發`, today: '今日出發', onTrip: '旅程進行中', done: '已完成',
+    nights: n => `${n} 晚`, items: n => `${n} 項預訂`, packed: (a, b) => `已執 ${a}/${b}`,
+    tabItin: '行程', tabTickets: '票', tabPack: '行李', tabBudget: '預算',
+    day: n => `第 ${n} 日`, addHere: '+ 加到呢日', nothingDay: '仲未有安排',
+    checkin: 'Check-in', staying: '住宿', checkout: 'Check-out', arrives: '抵達',
+    tTransport: '交通', tStay: '住宿', tActivity: '活動',
+    fTripName: '旅程名稱', fDest: '目的地', fStart: '第一日', fEnd: '最後一日', fTravellers: '邊個去',
+    fNotes: '備註(可選)', fTitle: '標題', fTitleOpt: '標題(可選)', fMethod: '交通方式', fFrom: '出發地', fTo: '目的地',
+    fDepDate: '出發日期', fDepTime: '出發時間', fArrDate: '抵達日期', fArrTime: '抵達時間',
+    fFromTz: '出發地時區', fToTz: '目的地時區',
+    fHotel: '住邊度', fAddress: '地址(可選)', fCheckin: 'Check-in 日期', fCheckout: 'Check-out 日期',
+    fDate: '日期', fStartTime: '開始時間(可選)', fEndTime: '結束時間(可選)', fLocation: '地點(可選)',
+    fRef: '預訂編號(可選)', fSync: '傳送到手機日曆', fSendTo: '通知對象',
+    fAlarms: '提醒(可以揀多個)',
+    m_plane: '飛機', m_train: '火車', m_bus: '巴士', m_drive: '揸車', m_ferry: '船', m_other: '其他',
+    a0: '準時', a0day: '當日早上 9 點', a15: '15 分鐘前', a30: '30 分鐘前', a60: '1 小時前',
+    a120: '2 小時前', a1440: '1 日前', a2880: '2 日前', a10080: '1 星期前',
+    save: '儲存', cancel: '取消', close: '關閉', del: '刪除', delConfirm: '再㩒一次確認刪除',
+    addItem: '加入旅程', editItem: '編輯', newTripT: '新旅程', editTrip: '編輯旅程',
+    delTripNote: '會刪除旅程、行李清單、支出同檔案。交通、住宿同活動會保留（佢哋同家庭日曆共用）。',
+    tkIntro: '每項預訂嘅編號同票。打開過嘅檔案會存喺呢部手機，冇網都睇到。',
+    noRef: '冇預訂編號', copy: '複製', copied: '已複製', addFile: '+ 加票 / 檔案', otherDocs: '其他文件',
+    otherDocsHint: '護照副本、保險等，唔屬於任何一項預訂嘅文件。', open: '打開 / 儲存',
+    fileTooBig: '檔案太大(最多 10 MB)', uploading: '上載中…', fileSaved: '已加入檔案', fileDeleted: '已刪除檔案',
+    loadingFile: '打開緊…', fileFail: '打唔開檔案，請檢查網絡', offlineSaved: '已存喺手機',
+    packTitle: '行李清單', starter: '加入基本清單', packAdd: '加', packPlaceholder: '加一樣嘢…', shared: '共用',
+    c_documents: '文件', c_electronics: '電子產品', c_toiletries: '洗漱用品', c_clothes: '衫褲', c_other: '其他',
+    noPack: '清單仲係空嘅。',
+    budgetTitle: '支出', addExpense: '+ 加支出', noExp: '仲未有支出。', total: '總數',
+    paidBy: '邊個俾錢', splitWith: '幾個人夾', amount: '金額', currency: '貨幣', category: '類別',
+    e_transport: '交通', e_stay: '住宿', e_food: '飲食', e_activities: '活動', e_shopping: '購物', e_other: '其他',
+    owes: (a, b, x) => `${a} 要俾 ${b} ${x}`, allSquare: '數已經清，冇人欠人。',
+    paid: (n, x) => `${n} 俾咗 ${x}`, share: x => `應付 ${x}`,
+    newExpense: '新支出', editExpense: '編輯支出',
+    syncIdle: '請喺同步設定加入網址', syncing: '同步中…', synced: '已同步', saving: '儲存中…',
+    offline: '離線 — 用緊手機存低嘅資料', queued: '已存喺手機，有網會再同步', savingBtn: '儲存中…',
+    saved: '已儲存', deleted: '已刪除', saveFail: '儲存失敗，請再試', needTitle: '請填標題',
+    needDates: '請填日期', endBeforeStart: '最後一日早過第一日', needAmount: '請填金額',
+    syncUrlLabel: 'Apps Script 同步網址', syncUrlHint: '同家庭日曆共用嘅 Apps Script 網址，已經預設好。',
+    settings: '同步設定', untitled: '(冇標題)', onlineOnly: '要有網先做到'
+  }
+};
+
+const STARTER_PACK = {
+  documents:   [['Passports', '護照'], ['Travel insurance details', '旅遊保險資料'], ['Bank cards & some euros', '銀行卡同少少歐元']],
+  electronics: [['Phone chargers', '手機充電器'], ['Power bank', '尿袋'], ['EU plug adapter', '歐洲插頭轉換器'], ['Headphones', '耳筒']],
+  toiletries:  [['Toothbrush & toothpaste', '牙刷牙膏'], ['Skincare', '護膚品'], ['Medication', '藥']],
+  clothes:     [['Warm jacket', '保暖外套'], ['Underwear & socks', '內衣襪'], ['Pyjamas', '睡衣'], ['Comfortable shoes', '好行嘅鞋']],
+  other:       [['Umbrella', '遮'], ['Reusable bag', '環保袋']]
+};
+
+/* ---------------- state ---------------- */
+const state = {
+  lang: 'en',
+  data: { events: [], trips: [], packing: [], expenses: [], files: [] },
+  route: { view: 'home', tripId: null, tab: 'itin' },
+  modal: null,
+  sync: { status: 'idle', msg: '' },
+  saving: false,
+  pollTimer: null
+};
+
+/* ---------------- helpers ---------------- */
+function t(key, ...args) {
+  const v = (I18N[state.lang] || I18N.en)[key];
+  const val = v === undefined ? I18N.en[key] : v;
+  return typeof val === 'function' ? val(...args) : (val === undefined ? key : val);
+}
+function lsGet(key, fallback) { try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch { return fallback; } }
+function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function uid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+}
+function pad(n) { return String(n).padStart(2, '0'); }
+function dkey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function todayKey() { return dkey(new Date()); }
+function parseKey(k) { const p = String(k).split('-').map(Number); return new Date(p[0], (p[1] || 1) - 1, p[2] || 1); }
+function addDays(k, n) { const d = parseKey(k); d.setDate(d.getDate() + n); return dkey(d); }
+function daysBetween(a, b) {
+  const pa = String(a).split('-').map(Number), pb = String(b).split('-').map(Number);
+  return Math.round((Date.UTC(pb[0], pb[1] - 1, pb[2]) - Date.UTC(pa[0], pa[1] - 1, pa[2])) / 86400000);
+}
+function locale() { return state.lang === 'zh' ? 'zh-HK' : 'en-GB'; }
+function fmtDay(k, withWeekday) {
+  if (!k) return '';
+  return parseKey(k).toLocaleDateString(locale(), withWeekday === false
+    ? { day: 'numeric', month: 'short' } : { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function fmtRange(a, b) {
+  if (!a) return '';
+  if (!b || a === b) return fmtDay(a) + ', ' + parseKey(a).getFullYear();
+  const ya = parseKey(a).getFullYear(), yb = parseKey(b).getFullYear();
+  return fmtDay(a) + ' – ' + fmtDay(b) + ', ' + yb + (ya !== yb ? ' (' + ya + ')' : '');
+}
+function hhmm(v) {
+  if (v == null || v === '') return '';
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2}):(\d{2})/); if (m) return pad(m[1]) + ':' + m[2];
+  m = s.match(/T(\d{2}):(\d{2})/); if (m) return m[1] + ':' + m[2];
+  return '';
+}
+function list(v) {
+  if (v == null || v === '') return [];
+  if (Array.isArray(v)) return v.filter(Boolean);
+  return String(v).split(',').map(s => s.trim()).filter(Boolean);
+}
+function truthy(v) { return v === true || v === 'TRUE' || v === 'true' || v === 1 || v === '1'; }
+function personName(id) { const p = PEOPLE.find(x => x.id === id); return p ? p[state.lang] || p.en : id; }
+function chipFor(id) { return `<span class="chip ${esc(id)}">${esc(personName(id))}</span>`; }
+function money(amount, cur) {
+  const n = Number(amount) || 0;
+  const s = n.toLocaleString(locale(), { minimumFractionDigits: cur === 'JPY' ? 0 : 2, maximumFractionDigits: cur === 'JPY' ? 0 : 2 });
+  return (CUR_SYMBOL[cur] || (cur + ' ')) + s;
+}
+function parseAlarms(raw) {
+  if (raw === null || raw === undefined || raw === '') return [];
+  return String(raw).split(/[|,;\s]+/).filter(s => s !== '' && !isNaN(Number(s))).map(Number);
+}
+function serialiseAlarms(arr) {
+  const u = Array.from(new Set((arr || []).map(Number).filter(n => !isNaN(n)))); u.sort((a, b) => b - a); return u.join('|');
+}
+function deviceTz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London'; } catch { return 'Europe/London'; } }
+function tzLabel(tz) { const parts = String(tz).split('/'); return (parts[parts.length - 1] || tz).replace(/_/g, ' '); }
+
+/* travel icons (same drawings as the family calendar) */
+function travelIconSvg(methodId) {
+  const common = 'width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"';
+  switch (methodId) {
+    case 'plane':
+      return `<svg ${common}><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>`;
+    case 'train':
+      return `<svg ${common}><rect x="4" y="3" width="16" height="14" rx="3"/><line x1="4" y1="11" x2="20" y2="11"/><line x1="8" y1="15" x2="8.01" y2="15"/><line x1="16" y1="15" x2="16.01" y2="15"/><path d="m6 21 2-3"/><path d="m18 21-2-3"/></svg>`;
+    case 'drive': case 'car':
+      return `<svg ${common}><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>`;
+    case 'bus':
+      return `<svg ${common}><path d="M8 6v6"/><path d="M16 6v6"/><path d="M2 12h20"/><path d="M18 18h2a1 1 0 0 0 1-1V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v9a1 1 0 0 0 1 1h2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
+    case 'ferry': case 'boat':
+      return `<svg ${common}><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76"/><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"/><path d="M12 10v4"/><path d="M12 2v3"/></svg>`;
+    default:
+      return '';
+  }
+}
+
+function itemIcon(type, method) {
+  const common = 'width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  if (type === 'stay') return `<svg ${common}><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>`;
+  if (type === 'activity') return `<svg ${common}><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>`;
+  const svg = travelIconSvg(method || 'other');
+  return svg ? svg.replace(/width="14" height="14"/, 'width="18" height="18"').replace(/style="[^"]*"/, '')
+             : `<svg ${common}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`;
+}
+
+/* ---------------- data access ---------------- */
+function D() { return state.data; }
+function tripById(id) { return D().trips.find(x => String(x.id) === String(id)); }
+function itemType(e) {
+  if (e.kind === 'travel') return 'transport';
+  if (e.kind === 'stay') return 'stay';
+  if (e.kind === 'activity') return 'activity';
+  if (/^(hotel|酒店|住宿)\b|^hotel:/i.test(String(e.title || ''))) return 'stay';
+  return 'activity';
+}
+function lastNight(e) { return (e.end_date && e.end_date > e.date) ? e.end_date : e.date; }
+function tripItems(trip) {
+  if (!trip) return [];
+  const trav = list(trip.travellers).length ? list(trip.travellers) : DEFAULT_TRAVELLERS;
+  return D().events.filter(e => {
+    if (!e.date) return false;
+    if (e.recurring && e.recurring !== 'none') return false;
+    const type = itemType(e);
+    const last = type === 'stay' ? addDays(lastNight(e), 1) : (e.end_date && e.end_date > e.date ? e.end_date : e.date);
+    if (e.date > trip.end_date || last < trip.start_date) return false;
+    return list(e.assignee).some(p => trav.indexOf(p) >= 0);
+  });
+}
+function itemsSorted(items) {
+  return items.slice().sort((a, b) => (a.date + (hhmm(a.time) || '99')).localeCompare(b.date + (hhmm(b.time) || '99')));
+}
+function filesFor(parentId) { return D().files.filter(f => String(f.parent_id) === String(parentId)); }
+function splitNotes(notes) {
+  const lines = String(notes || '').split('\n');
+  if (lines[0] && lines[0].trim().startsWith('@')) {
+    return { location: lines[0].trim().slice(1).trim(), rest: lines.slice(1).join('\n').trim() };
+  }
+  return { location: '', rest: String(notes || '').trim() };
+}
+function joinNotes(location, rest) {
+  const loc = String(location || '').trim();
+  return (loc ? '@' + loc + (rest ? '\n' : '') : '') + String(rest || '').trim();
+}
+
+/* ---------------- sync ---------------- */
+function getSyncUrl() { return lsGet(LS.syncUrl, '') || DEFAULT_SYNC_URL; }
+function setSync(status, msg) { state.sync = { status, msg }; renderSyncPill(); }
+function applyServerData(data) {
+  ['events', 'trips', 'packing', 'expenses', 'files'].forEach(k => { if (Array.isArray(data[k])) state.data[k] = data[k]; });
+  lsSet(LS.cache, state.data);
+}
+async function pull() {
+  const url = getSyncUrl();
+  if (!url) { setSync('idle', t('syncIdle')); return; }
+  setSync('syncing', t('syncing'));
+  try {
+    await flushPending();
+    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Server error');
+    applyServerData(data);
+    setSync('ok', t('synced'));
+    rerender();
+  } catch (e) {
+    setSync('err', t('offline'));
+  }
+}
+async function postRaw(body) {
+  const res = await fetch(getSyncUrl(), {
+    method: 'POST', redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || 'Server error');
+  return data;
+}
+async function flushPending() {
+  const q = lsGet(LS.pending, []);
+  if (!q.length || !getSyncUrl()) return;
+  const left = [];
+  for (const body of q) {
+    try { await postRaw(body); } catch (e) { left.push(body); }
+  }
+  lsSet(LS.pending, left);
+}
+// Apply a change on the phone straight away, then send it. Returns true when the server confirmed it.
+function applyLocal(change) {
+  const arr = state.data[change.kind];
+  if (!arr) return;
+  if (change.action === 'add') arr.push(change.item);
+  if (change.action === 'update') { const i = arr.findIndex(x => String(x.id) === String(change.item.id)); if (i >= 0) arr[i] = change.item; else arr.push(change.item); }
+  if (change.action === 'delete') { state.data[change.kind] = arr.filter(x => String(x.id) !== String(change.id)); }
+}
+async function send(changes) {
+  changes.forEach(applyLocal);
+  lsSet(LS.cache, state.data);
+  const body = changes.length === 1 ? changes[0] : { action: 'bulk', changes };
+  if (!getSyncUrl()) { lsSet(LS.pending, lsGet(LS.pending, []).concat([body])); setSync('err', t('queued')); return false; }
+  setSync('syncing', t('saving'));
+  try {
+    const data = await postRaw(body);
+    await flushPending();
+    applyServerData(data);
+    setSync('ok', t('synced'));
+    return true;
+  } catch (e) {
+    lsSet(LS.pending, lsGet(LS.pending, []).concat([body]));
+    setSync('err', t('queued'));
+    return false;
+  }
+}
+
+/* ---------------- offline file cache (IndexedDB) ---------------- */
+function idb() {
+  return new Promise((resolve, reject) => {
+    try {
+      const req = indexedDB.open('familyTripsFiles', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('files');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    } catch (e) { reject(e); }
+  });
+}
+async function idbGet(id) {
+  try { const db = await idb(); return await new Promise(r => { const q = db.transaction('files').objectStore('files').get(id); q.onsuccess = () => r(q.result || null); q.onerror = () => r(null); }); }
+  catch { return null; }
+}
+async function idbPut(id, val) {
+  try { const db = await idb(); await new Promise(r => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').put(val, id); tx.oncomplete = r; tx.onerror = r; }); }
+  catch {}
+}
+async function idbDel(id) {
+  try { const db = await idb(); await new Promise(r => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').delete(id); tx.oncomplete = r; tx.onerror = r; }); }
+  catch {}
+}
+
+/* ---------------- routing ---------------- */
+function parseRoute() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const parts = h.split('/');
+  if (parts[0] === 'trip' && parts[1]) return { view: 'trip', tripId: decodeURIComponent(parts[1]), tab: parts[2] || 'itin' };
+  return { view: 'home', tripId: null, tab: 'itin' };
+}
+function go(hash) { if (location.hash === hash) { state.route = parseRoute(); render(); } else location.hash = hash; }
+window.addEventListener('hashchange', () => { state.route = parseRoute(); state.modal = null; render(); window.scrollTo(0, 0); });
+
+/* ---------------- rendering ---------------- */
+function rerender() {
+  // Don't rebuild a form the user is typing into
+  if (state.modal && state.modal.form) { renderSyncPill(); return; }
+  render();
+}
+function render() {
+  const r = state.route;
+  let body = '';
+  if (r.view === 'trip') {
+    const trip = tripById(r.tripId);
+    body = trip ? renderTrip(trip, r.tab) : `<div class="card"><div class="empty-state">…</div></div>`;
+  } else body = renderHome();
+  document.getElementById('app').innerHTML = renderHeader() + body + renderModal();
+  renderSyncPill();
+}
+function renderHeader() {
+  const lang = state.lang;
+  return `
+    <div class="header">
+      <div>
+        <div class="brand">${esc(t('brand1'))}<em>${esc(t('brand2'))}</em></div>
+        <div class="brand-row">
+          <div class="lang-toggle">
+            <button class="${lang === 'en' ? 'active' : ''}" onclick="setLang('en')">EN</button>
+            <button class="${lang === 'zh' ? 'active' : ''}" onclick="setLang('zh')">中</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sync-pill-host"></div>`;
+}
+function renderSyncPill() {
+  const host = document.getElementById('sync-pill-host');
+  if (!host) return;
+  host.innerHTML = `<div class="sync-row"><div class="sync-pill ${esc(state.sync.status)}"><span class="dot"></span>${esc(state.sync.msg || '')}</div><div class="version-tag">${esc(APP_VERSION)}</div></div>`;
+}
+
+function tripStatus(trip) {
+  const today = todayKey();
+  if (trip.start_date > today) { const n = daysBetween(today, trip.start_date); return { cls: 'up', text: t('inDays', n) }; }
+  if (trip.end_date >= today) return { cls: 'now', text: trip.start_date === today ? t('today') : t('onTrip') };
+  return { cls: 'past', text: t('done') };
+}
+function renderHome() {
+  const trips = D().trips.slice().sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)));
+  const today = todayKey();
+  const upcoming = trips.filter(x => x.end_date >= today);
+  const past = trips.filter(x => x.end_date < today).reverse();
+  const card = trip => {
+    const st = tripStatus(trip);
+    const items = tripItems(trip);
+    const pack = D().packing.filter(p => String(p.trip_id) === String(trip.id));
+    const packedN = pack.filter(p => truthy(p.packed)).length;
+    const nights = Math.max(0, daysBetween(trip.start_date, trip.end_date));
+    return `
+      <button class="trip-card ${st.cls === 'past' ? 'past' : ''}" onclick="go('#/trip/${encodeURIComponent(trip.id)}/itin')">
+        <div class="tc-top"><div class="tc-name">${esc(trip.name || t('untitled'))}</div><div class="tc-count">${esc(st.text)}</div></div>
+        <div class="tc-sub">${esc([trip.destination, fmtRange(trip.start_date, trip.end_date)].filter(Boolean).join(' · '))}</div>
+        <div class="tc-stats">
+          <span class="stat-pill">${esc(t('nights', nights))}</span>
+          <span class="stat-pill">${esc(t('items', items.length))}</span>
+          ${pack.length ? `<span class="stat-pill">${esc(t('packed', packedN, pack.length))}</span>` : ''}
+        </div>
+      </button>`;
+  };
+  return `
+    <div class="view">
+      ${upcoming.length ? `<div class="section-title">${esc(t('upcoming'))}</div><div class="trip-grid">${upcoming.map(card).join('')}</div>` : ''}
+      ${!trips.length ? `<div class="card"><div class="empty-state">${esc(t('noTrips'))}</div></div>` : ''}
+      <button class="add-btn" onclick="openTripModal()">${esc(t('newTrip'))}</button>
+      ${past.length ? `<div class="section-title">${esc(t('past'))}</div><div class="trip-grid">${past.map(card).join('')}</div>` : ''}
+      <div class="section-title">${esc(t('settings'))}</div>
+      <div class="card">
+        <div class="field">
+          <label>${esc(t('syncUrlLabel'))}</label>
+          <input type="url" id="sync-url" value="${esc(getSyncUrl())}" placeholder="https://script.google.com/macros/s/…/exec" onchange="saveSyncUrl(this.value)">
+        </div>
+        <div class="type-hint">${esc(t('syncUrlHint'))}</div>
+      </div>
+    </div>`;
+}
+function saveSyncUrl(v) { lsSet(LS.syncUrl, String(v || '').trim()); pull(); }
+
+function renderTrip(trip, tab) {
+  const nights = Math.max(0, daysBetween(trip.start_date, trip.end_date));
+  const trav = list(trip.travellers);
+  const tabs = [['itin', 'tabItin'], ['tickets', 'tabTickets'], ['pack', 'tabPack'], ['budget', 'tabBudget']];
+  let content = '';
+  if (tab === 'tickets') content = renderTickets(trip);
+  else if (tab === 'pack') content = renderPacking(trip);
+  else if (tab === 'budget') content = renderBudget(trip);
+  else content = renderItinerary(trip);
+  return `
+    <div class="view">
+      <button class="back-link" onclick="go('#/')">${esc(t('allTrips'))}</button>
+      <div class="card trip-head">
+        <div class="th-row">
+          <div>
+            <h2>${esc(trip.name || t('untitled'))}</h2>
+            <div class="th-sub">${esc([trip.destination, fmtRange(trip.start_date, trip.end_date), t('nights', nights)].filter(Boolean).join(' · '))}</div>
+          </div>
+          <button class="icon-btn" onclick="openTripModal('${esc(trip.id)}')">✎</button>
+        </div>
+        <div class="th-chips">${trav.map(chipFor).join('')}<span class="stat-pill">${esc(tripStatus(trip).text)}</span></div>
+      </div>
+      <div class="tabbar four">
+        ${tabs.map(([k, l]) => `<button class="${tab === k ? 'active' : ''}" onclick="go('#/trip/${encodeURIComponent(trip.id)}/${k}')">${esc(t(l))}</button>`).join('')}
+      </div>
+      ${content}
+    </div>`;
+}
+
+/* ---- Itinerary ---- */
+function itemRowParts(e) {
+  const type = itemType(e);
+  const sn = splitNotes(e.notes);
+  let time = '', sub = [];
+  if (type === 'transport') {
+    const a = hhmm(e.time), b = hhmm(e.end_time);
+    const arrDay = e.end_date && e.end_date !== e.date ? ' (' + fmtDay(e.end_date, false) + ')' : '';
+    time = a && b ? `${a} → ${b}${arrDay}` : (a || '');
+    if (e.from_location || e.to_location) sub.push([e.from_location, e.to_location].filter(Boolean).join(' → '));
+  } else {
+    const a = hhmm(e.time), b = hhmm(e.end_time);
+    time = a && b ? `${a} → ${b}` : a;
+    if (sn.location) sub.push(sn.location);
+  }
+  return { type, time, sub };
+}
+function renderItemRow(e, label, soft) {
+  const p = itemRowParts(e);
+  const files = filesFor(e.id).length;
+  const ref = e.booking_ref ? `<span class="ref-pill">${esc(e.booking_ref)}</span>` : '';
+  const timeLine = [label, p.time].filter(Boolean).join(' · ');
+  return `
+    <button class="trip-row ${soft ? 'soft' : ''}" onclick="openItemModal('${esc(e.id)}')">
+      <span class="trip-ico ${p.type}">${itemIcon(p.type, e.travel_method)}</span>
+      <span class="trip-main">
+        ${timeLine ? `<span class="trip-time">${esc(timeLine)}</span>` : ''}
+        <span class="trip-title">${esc(e.title || t('untitled'))}</span>
+        ${p.sub.length || ref || files ? `<span class="trip-sub">${esc(p.sub.join(' · '))} ${ref} ${files ? '📎' + files : ''}</span>` : ''}
+      </span>
+    </button>`;
+}
+function renderItinerary(trip) {
+  const items = itemsSorted(tripItems(trip));
+  const days = [];
+  for (let k = trip.start_date, i = 1; k <= trip.end_date && i <= 60; k = addDays(k, 1), i++) days.push(k);
+  const blocks = days.map((k, i) => {
+    const rows = [];
+    items.forEach(e => {
+      const type = itemType(e);
+      if (type === 'stay') {
+        const ln = lastNight(e);
+        if (k === e.date) rows.push({ order: 9, html: renderItemRow(e, t('checkin'), false) });
+        else if (k > e.date && k <= ln) rows.push({ order: 9, html: renderItemRow(e, t('staying'), true) });
+        else if (k === addDays(ln, 1)) rows.push({ order: 0, html: renderItemRow(e, t('checkout'), true) });
+      } else if (type === 'transport') {
+        if (e.date === k) rows.push({ order: 1, time: hhmm(e.time) || '99', html: renderItemRow(e, '', false) });
+      } else {
+        const last = e.end_date && e.end_date > e.date ? e.end_date : e.date;
+        if (k >= e.date && k <= last) rows.push({ order: 1, time: hhmm(e.time) || '98', html: renderItemRow(e, '', false) });
+      }
+    });
+    rows.sort((a, b) => a.order - b.order || String(a.time || '').localeCompare(String(b.time || '')));
+    return `
+      <div class="day-block">
+        <div class="day-head"><span class="dh-date">${esc(fmtDay(k))}</span><span class="dh-num">${esc(t('day', i + 1))}</span></div>
+        ${rows.length ? rows.map(r => r.html).join('') : `<div class="type-hint" style="margin:0 0 8px 4px">${esc(t('nothingDay'))}</div>`}
+        <button class="mini-add" onclick="openItemModal(null, '${k}')">${esc(t('addHere'))}</button>
+      </div>`;
+  }).join('');
+  return `<div class="card">${blocks}</div>`;
+}
+
+/* ---- Tickets ---- */
+function fileRows(parentId) {
+  return filesFor(parentId).map(f => `
+    <div class="file-row">
+      <span class="fr-name" onclick="openFile('${esc(f.id)}')">📄 ${esc(f.name)}</span>
+      <span class="fr-size">${esc(fmtSize(f.size))}</span>
+      <button class="small-btn warn" onclick="deleteFile('${esc(f.id)}', this)">✕</button>
+    </div>`).join('');
+}
+function fmtSize(n) { n = Number(n) || 0; return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+function renderTickets(trip) {
+  const items = itemsSorted(tripItems(trip));
+  const cards = items.map(e => {
+    const p = itemRowParts(e);
+    return `
+      <div class="ticket-card">
+        <div class="tk-head">
+          <span class="trip-ico ${p.type}">${itemIcon(p.type, e.travel_method)}</span>
+          <span class="trip-main">
+            <span class="trip-time">${esc(fmtDay(e.date) + (p.time ? ' · ' + p.time : ''))}</span>
+            <span class="trip-title">${esc(e.title || t('untitled'))}</span>
+          </span>
+          <button class="icon-btn" onclick="openItemModal('${esc(e.id)}')">✎</button>
+        </div>
+        <div class="tk-ref">
+          ${e.booking_ref
+            ? `<span class="ref-big">${esc(e.booking_ref)}</span><button class="small-btn" onclick="copyText('${esc(String(e.booking_ref).replace(/'/g, ''))}')">${esc(t('copy'))}</button>`
+            : `<span class="type-hint" style="margin:0">${esc(t('noRef'))}</span>`}
+        </div>
+        ${fileRows(e.id)}
+        <button class="mini-add" style="margin-top:10px" onclick="pickFile('${esc(e.id)}', '${esc(trip.id)}')">${esc(t('addFile'))}</button>
+      </div>`;
+  }).join('');
+  return `
+    <div class="card">
+      <div class="type-hint">${esc(t('tkIntro'))}</div>
+      ${cards || `<div class="empty-state">${esc(t('nothingDay'))}</div>`}
+      <div class="section-title">${esc(t('otherDocs'))}</div>
+      <div class="type-hint">${esc(t('otherDocsHint'))}</div>
+      ${fileRows(trip.id)}
+      <button class="mini-add" style="margin-top:10px" onclick="pickFile('${esc(trip.id)}', '${esc(trip.id)}')">${esc(t('addFile'))}</button>
+    </div>
+    <input type="file" id="file-input" accept="image/*,application/pdf" style="display:none" onchange="onFilePicked(this)">`;
+}
+function copyText(s) {
+  const done = () => toast(t('copied'));
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(done, done); else done();
+}
+
+/* ---- Packing ---- */
+function renderPacking(trip) {
+  const items = D().packing.filter(p => String(p.trip_id) === String(trip.id))
+    .sort((a, b) => (Number(a.sort) || 0) - (Number(b.sort) || 0) || String(a.created_at).localeCompare(String(b.created_at)));
+  const packedN = items.filter(p => truthy(p.packed)).length;
+  const pct = items.length ? Math.round(packedN / items.length * 100) : 0;
+  const trav = list(trip.travellers);
+  const whoOpts = [['shared', t('shared')]].concat(trav.map(p => [p, personName(p)]));
+  const groups = PACK_CATS.map(cat => {
+    const rows = items.filter(p => (p.category || 'other') === cat);
+    if (!rows.length) return '';
+    return `<div class="section-title">${esc(t('c_' + cat))}</div>` + rows.map(p => `
+      <div class="pack-row ${truthy(p.packed) ? 'done' : ''}">
+        <button class="pack-check ${truthy(p.packed) ? 'on' : ''}" onclick="togglePacked('${esc(p.id)}')">${truthy(p.packed) ? '✓' : ''}</button>
+        <span class="pack-name" onclick="togglePacked('${esc(p.id)}')">${esc(p.item)}</span>
+        ${p.who && p.who !== 'shared' ? `<span class="who-tag">${esc(personName(p.who))}</span>` : ''}
+        <button class="pack-x" onclick="deletePack('${esc(p.id)}')">✕</button>
+      </div>`).join('');
+  }).join('');
+  return `
+    <div class="card">
+      <div class="day-head"><span class="dh-date">${esc(t('packTitle'))}</span><span class="dh-num">${esc(t('packed', packedN, items.length))}</span></div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      ${items.length ? groups : `<div class="empty-state">${esc(t('noPack'))}<br><br><button class="btn secondary" onclick="addStarterPack('${esc(trip.id)}')">${esc(t('starter'))}</button></div>`}
+      <div class="pack-add">
+        <input type="text" id="pack-new" placeholder="${esc(t('packPlaceholder'))}" onkeydown="if(event.key==='Enter'){addPack('${esc(trip.id)}')}">
+        <div class="row2">
+          <select id="pack-cat">${PACK_CATS.map(c => `<option value="${c}">${esc(t('c_' + c))}</option>`).join('')}</select>
+          <select id="pack-who">${whoOpts.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
+          <button class="btn primary" onclick="addPack('${esc(trip.id)}')">${esc(t('packAdd'))}</button>
+        </div>
+      </div>
+    </div>`;
+}
+async function togglePacked(id) {
+  const p = D().packing.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const item = { ...p, packed: !truthy(p.packed) };
+  applyLocal({ action: 'update', kind: 'packing', item }); render();
+  await send([{ action: 'update', kind: 'packing', item }]);
+  rerender();
+}
+async function addPack(tripId) {
+  const input = document.getElementById('pack-new');
+  const text = (input && input.value || '').trim();
+  if (!text) return;
+  const cat = document.getElementById('pack-cat').value;
+  const who = document.getElementById('pack-who').value;
+  const item = { id: uid(), trip_id: tripId, item: text, category: cat, who, packed: false, sort: Date.now() };
+  input.value = '';
+  const keepCat = cat, keepWho = who;
+  applyLocal({ action: 'add', kind: 'packing', item }); render();
+  const c = document.getElementById('pack-cat'); if (c) c.value = keepCat;
+  const w = document.getElementById('pack-who'); if (w) w.value = keepWho;
+  const n = document.getElementById('pack-new'); if (n) n.focus();
+  state.data.packing = state.data.packing.filter(x => x.id !== item.id);  // send() re-applies it
+  await send([{ action: 'add', kind: 'packing', item }]);
+  rerender();
+}
+async function deletePack(id) {
+  await send([{ action: 'delete', kind: 'packing', id }]);
+  render();
+}
+async function addStarterPack(tripId) {
+  const zh = state.lang === 'zh';
+  let n = 0;
+  const changes = [];
+  PACK_CATS.forEach(cat => (STARTER_PACK[cat] || []).forEach(([en, z]) => {
+    changes.push({ action: 'add', kind: 'packing', item: { id: uid(), trip_id: tripId, item: zh ? z : en, category: cat, who: 'shared', packed: false, sort: Date.now() + (n++) } });
+  }));
+  setSavingOverlay(true);
+  const p = send(changes);
+  render();
+  await p;
+  setSavingOverlay(false);
+  render();
+}
+
+/* ---- Budget ---- */
+function renderBudget(trip) {
+  const ex = D().expenses.filter(x => String(x.trip_id) === String(trip.id))
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.created_at).localeCompare(String(b.created_at)));
+  const trav = list(trip.travellers);
+  const byCur = {};
+  ex.forEach(x => {
+    const cur = x.currency || 'GBP';
+    const amt = Number(x.amount) || 0;
+    const split = list(x.split_with).length ? list(x.split_with) : trav;
+    const b = byCur[cur] = byCur[cur] || { total: 0, paid: {}, share: {} };
+    b.total += amt;
+    b.paid[x.paid_by] = (b.paid[x.paid_by] || 0) + amt;
+    split.forEach(p => { b.share[p] = (b.share[p] || 0) + amt / split.length; });
+  });
+  const tiles = Object.keys(byCur).map(cur => {
+    const b = byCur[cur];
+    const people = Array.from(new Set(Object.keys(b.paid).concat(Object.keys(b.share)))).filter(Boolean);
+    return `
+      <div class="money-tile">
+        <div class="mt-label">${esc(t('total'))} · ${esc(cur)}</div>
+        <div class="mt-value">${esc(money(b.total, cur))}</div>
+        <div class="mt-sub">${people.map(p => esc(t('paid', personName(p), money(b.paid[p] || 0, cur))) + ' · ' + esc(t('share', money(b.share[p] || 0, cur)))).join('<br>')}</div>
+      </div>`;
+  }).join('');
+  // Settle up, per currency
+  const settle = [];
+  Object.keys(byCur).forEach(cur => {
+    const b = byCur[cur];
+    const bal = {};
+    Object.keys(b.paid).forEach(p => { bal[p] = (bal[p] || 0) + b.paid[p]; });
+    Object.keys(b.share).forEach(p => { bal[p] = (bal[p] || 0) - b.share[p]; });
+    const debtors = Object.keys(bal).filter(p => bal[p] < -0.005).map(p => ({ p, v: -bal[p] }));
+    const creditors = Object.keys(bal).filter(p => bal[p] > 0.005).map(p => ({ p, v: bal[p] }));
+    debtors.forEach(d => {
+      creditors.forEach(c => {
+        if (d.v < 0.005 || c.v < 0.005) return;
+        const x = Math.min(d.v, c.v);
+        settle.push(t('owes', personName(d.p), personName(c.p), money(x, cur)));
+        d.v -= x; c.v -= x;
+      });
+    });
+  });
+  const rows = ex.map(x => `
+    <button class="trip-row" onclick="openExpenseModal('${esc(trip.id)}', '${esc(x.id)}')">
+      <span class="trip-main">
+        <span class="trip-time">${esc(fmtDay(x.date))} · ${esc(t('e_' + (x.category || 'other')))}</span>
+        <span class="trip-title">${esc(x.title || t('untitled'))}</span>
+        <span class="trip-sub">${esc(t('paidBy'))}: ${esc(personName(x.paid_by))} · ${esc(t('splitWith'))}: ${esc((list(x.split_with).length ? list(x.split_with) : trav).map(personName).join(', '))}</span>
+      </span>
+      <span class="exp-amount">${esc(money(x.amount, x.currency || 'GBP'))}</span>
+    </button>`).join('');
+  return `
+    <div class="card">
+      <div class="day-head"><span class="dh-date">${esc(t('budgetTitle'))}</span></div>
+      ${tiles ? `<div class="money-grid">${tiles}</div><div class="settle">${settle.length ? settle.map(esc).join('<br>') : esc(t('allSquare'))}</div>` : ''}
+      <div style="margin-top:14px">${rows || `<div class="empty-state">${esc(t('noExp'))}</div>`}</div>
+      <button class="add-btn" onclick="openExpenseModal('${esc(trip.id)}')">${esc(t('addExpense'))}</button>
+    </div>`;
+}
+
+/* ---------------- modals ---------------- */
+function renderModal() {
+  const m = state.modal;
+  if (!m) return '';
+  let inner = '';
+  if (m.type === 'trip') inner = tripForm(m);
+  else if (m.type === 'item') inner = itemForm(m);
+  else if (m.type === 'expense') inner = expenseForm(m);
+  else if (m.type === 'file') inner = fileViewer(m);
+  return `<div class="backdrop" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()">${inner}</div></div>`;
+}
+function closeModal(e) {
+  if (e && e.target !== e.currentTarget) return;
+  if (state.modal && state.modal.url) { try { URL.revokeObjectURL(state.modal.url); } catch {} }
+  state.modal = null; render();
+}
+function chips(id, options, selected, multi) {
+  const sel = new Set(selected || []);
+  return `<div class="chip-picker" id="${id}">${options.map(([v, l]) =>
+    `<button type="button" data-val="${esc(v)}" class="${sel.has(String(v)) ? 'active' : ''}" onclick="${multi ? 'toggleChip(this)' : 'pickChip(this)'}">${esc(l)}</button>`).join('')}</div>`;
+}
+function pickChip(btn) { btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function toggleChip(btn) { btn.classList.toggle('active'); }
+function picked(id) { const el = document.getElementById(id); return el ? Array.from(el.querySelectorAll('button.active')).map(b => b.dataset.val) : []; }
+function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function modalButtons(saveFn, extra) {
+  return `
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()" ${state.saving ? 'disabled' : ''}>${esc(t('cancel'))}</button>
+      <button class="btn primary" onclick="${saveFn}" ${state.saving ? 'disabled' : ''}>${esc(state.saving ? t('savingBtn') : t('save'))}</button>
+    </div>${extra || ''}`;
+}
+function deleteButton(fn) { return `<button class="delete-link" onclick="armDelete(this, '${fn}')">${esc(t('del'))}</button>`; }
+function armDelete(btn, fn) {
+  if (btn.classList.contains('armed')) { window[fn](); return; }
+  btn.classList.add('armed'); btn.textContent = t('delConfirm');
+}
+function humanOptions() { return PEOPLE.map(p => [p.id, personName(p.id)]); }
+
+/* Trip form */
+function openTripModal(id) {
+  const trip = id ? tripById(id) : null;
+  state.modal = { type: 'trip', form: true, id: id || null, trip };
+  render();
+}
+function tripForm(m) {
+  const tr = m.trip || {};
+  return `
+    <h3>${esc(m.id ? t('editTrip') : t('newTripT'))}</h3>
+    <div class="field"><label>${esc(t('fTripName'))}</label><input type="text" id="tr-name" value="${esc(tr.name || '')}"></div>
+    <div class="field"><label>${esc(t('fDest'))}</label><input type="text" id="tr-dest" value="${esc(tr.destination || '')}"></div>
+    <div class="field-row">
+      <div class="field"><label>${esc(t('fStart'))}</label><input type="date" id="tr-start" value="${esc(tr.start_date || '')}"></div>
+      <div class="field"><label>${esc(t('fEnd'))}</label><input type="date" id="tr-end" value="${esc(tr.end_date || '')}"></div>
+    </div>
+    <div class="field"><label>${esc(t('fTravellers'))}</label>${chips('tr-who', humanOptions(), m.id ? list(tr.travellers) : DEFAULT_TRAVELLERS, true)}</div>
+    <div class="field"><label>${esc(t('fNotes'))}</label><textarea id="tr-notes">${esc(tr.notes || '')}</textarea></div>
+    ${modalButtons('saveTrip()', m.id ? deleteButton('deleteTrip') + `<div class="type-hint" style="margin-top:8px">${esc(t('delTripNote'))}</div>` : '')}`;
+}
+async function saveTrip() {
+  if (state.saving) return;
+  const m = state.modal;
+  const name = val('tr-name'), start = val('tr-start'), end = val('tr-end');
+  if (!name) { toast(t('needTitle')); return; }
+  if (!start || !end) { toast(t('needDates')); return; }
+  if (end < start) { toast(t('endBeforeStart')); return; }
+  const item = { ...(m.trip || {}), id: m.id || uid(), name, destination: val('tr-dest'), start_date: start, end_date: end,
+                 travellers: picked('tr-who').join(','), notes: val('tr-notes') };
+  await saving(async () => {
+    await send([{ action: m.id ? 'update' : 'add', kind: 'trips', item }]);
+    state.modal = null;
+    toast(t('saved'));
+    if (!m.id) go('#/trip/' + encodeURIComponent(item.id) + '/itin'); else render();
+  });
+}
+async function deleteTrip() {
+  const m = state.modal;
+  if (!m || !m.id) return;
+  const id = m.id;
+  const changes = [{ action: 'delete', kind: 'trips', id }]
+    .concat(D().packing.filter(x => String(x.trip_id) === String(id)).map(x => ({ action: 'delete', kind: 'packing', id: x.id })))
+    .concat(D().expenses.filter(x => String(x.trip_id) === String(id)).map(x => ({ action: 'delete', kind: 'expenses', id: x.id })))
+    .concat(D().files.filter(x => String(x.trip_id) === String(id) && String(x.parent_id) === String(id)).map(x => ({ action: 'delete', kind: 'files', id: x.id })));
+  await saving(async () => {
+    await send(changes);
+    state.modal = null;
+    toast(t('deleted'));
+    go('#/');
+  });
+}
+
+/* Item form (transport / stay / activity) */
+function openItemModal(id, presetDate) {
+  const trip = tripById(state.route.tripId);
+  const ev = id ? D().events.find(x => String(x.id) === String(id)) : null;
+  state.modal = { type: 'item', form: true, id: id || null, ev, itemType: ev ? itemType(ev) : 'transport',
+                  date: presetDate || (trip && trip.start_date) || todayKey() };
+  render();
+}
+function setItemType(type) {
+  // keep anything already typed that both forms share
+  const m = state.modal;
+  m.keep = { title: val('it-title'), ref: val('it-ref'), notes: val('it-notes') };
+  m.itemType = type;
+  render();
+}
+function tzSelect(id, current) {
+  const opts = Array.from(new Set([current, deviceTz()].concat(COMMON_TZ).filter(Boolean)));
+  return `<select id="${id}">${opts.map(z => `<option value="${esc(z)}" ${z === current ? 'selected' : ''}>${esc(tzLabel(z))} (${esc(z.split('/')[0])})</option>`).join('')}</select>`;
+}
+function itemForm(m) {
+  const e = m.ev || {};
+  const keep = m.keep || {};
+  const type = m.itemType;
+  const sn = splitNotes(e.notes);
+  const notes = keep.notes !== undefined ? keep.notes : sn.rest;
+  const title = keep.title !== undefined ? keep.title : (e.title || '');
+  const ref = keep.ref !== undefined ? keep.ref : (e.booking_ref || '');
+  const date = e.date || m.date;
+  const syncOn = m.id ? truthy(e.sync_to_ios) : true;
+  const recips = m.id ? list(e.recipients) : DEFAULT_RECIPIENTS;
+  const alarms = parseAlarms(e.alarm_minutes).map(String);
+  const alarmOpts = (type === 'stay'
+    ? [[0, 'a0day'], [1440, 'a1440'], [2880, 'a2880'], [10080, 'a10080']]
+    : [[0, 'a0'], [15, 'a15'], [30, 'a30'], [60, 'a60'], [120, 'a120'], [1440, 'a1440'], [2880, 'a2880']]).map(([v, k]) => [String(v), t(k)]);
+  let fields = '';
+  if (type === 'transport') {
+    fields = `
+      <div class="field"><label>${esc(t('fMethod'))}</label>${chips('it-method', TRAVEL_METHODS.map(x => [x, t('m_' + x)]), [e.travel_method || 'train'], false)}</div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fFrom'))}</label><input type="text" id="it-from" value="${esc(e.from_location || '')}"></div>
+        <div class="field"><label>${esc(t('fTo'))}</label><input type="text" id="it-to" value="${esc(e.to_location || '')}"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fDepDate'))}</label><input type="date" id="it-date" value="${esc(date)}"></div>
+        <div class="field"><label>${esc(t('fDepTime'))}</label>${timeInput('it-time', e.time)}</div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fArrDate'))}</label><input type="date" id="it-end-date" value="${esc(e.end_date || date)}"></div>
+        <div class="field"><label>${esc(t('fArrTime'))}</label>${timeInput('it-end-time', e.end_time)}</div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fFromTz'))}</label>${tzSelect('it-from-tz', e.from_tz || deviceTz())}</div>
+        <div class="field"><label>${esc(t('fToTz'))}</label>${tzSelect('it-to-tz', e.to_tz || e.from_tz || deviceTz())}</div>
+      </div>
+      <div class="field"><label>${esc(t('fTitleOpt'))}</label><input type="text" id="it-title" value="${esc(title)}"></div>`;
+  } else if (type === 'stay') {
+    const checkout = addDays(lastNight({ date, end_date: e.end_date }), 1);
+    fields = `
+      <div class="field"><label>${esc(t('fHotel'))}</label><input type="text" id="it-title" value="${esc(title.replace(/^hotel:\s*/i, ''))}"></div>
+      <div class="field"><label>${esc(t('fAddress'))}</label><input type="text" id="it-loc" value="${esc(sn.location)}"></div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fCheckin'))}</label><input type="date" id="it-date" value="${esc(date)}"></div>
+        <div class="field"><label>${esc(t('fCheckout'))}</label><input type="date" id="it-checkout" value="${esc(m.id ? checkout : addDays(date, 1))}"></div>
+      </div>`;
+  } else {
+    fields = `
+      <div class="field"><label>${esc(t('fTitle'))}</label><input type="text" id="it-title" value="${esc(title)}"></div>
+      <div class="field"><label>${esc(t('fLocation'))}</label><input type="text" id="it-loc" value="${esc(sn.location)}"></div>
+      <div class="field"><label>${esc(t('fDate'))}</label><input type="date" id="it-date" value="${esc(date)}"></div>
+      <div class="field-row">
+        <div class="field"><label>${esc(t('fStartTime'))}</label>${timeInput('it-time', e.time)}</div>
+        <div class="field"><label>${esc(t('fEndTime'))}</label>${timeInput('it-end-time', e.end_time)}</div>
+      </div>`;
+  }
+  return `
+    <h3>${esc(m.id ? t('editItem') : t('addItem'))}</h3>
+    <div class="field"><div class="chip-picker" id="it-type">${[['transport', 'tTransport'], ['stay', 'tStay'], ['activity', 'tActivity']].map(([v, k]) =>
+      `<button type="button" data-val="${v}" class="${type === v ? 'active' : ''}" onclick="setItemType('${v}')">${esc(t(k))}</button>`).join('')}</div></div>
+    ${fields}
+    <div class="field"><label>${esc(t('fRef'))}</label><input type="text" id="it-ref" value="${esc(ref)}" autocapitalize="characters"></div>
+    <div class="field"><label>${esc(t('fNotes'))}</label><textarea id="it-notes">${esc(notes)}</textarea></div>
+    <div class="field"><div class="checkbox-row"><input type="checkbox" id="it-sync" ${syncOn ? 'checked' : ''} onchange="document.getElementById('it-sync-more').style.display=this.checked?'block':'none'"><span>${esc(t('fSync'))}</span></div></div>
+    <div id="it-sync-more" style="display:${syncOn ? 'block' : 'none'}">
+      <div class="field"><label>${esc(t('fSendTo'))}</label>${chips('it-recips', humanOptions(), recips, true)}</div>
+      <div class="field"><label>${esc(t('fAlarms'))}</label>${chips('it-alarms', alarmOpts, alarms, true)}</div>
+    </div>
+    ${modalButtons('saveItem()', m.id ? deleteButton('deleteItem') : '')}`;
+}
+function timeInput(id, v) {
+  return `<input type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" id="${id}" value="${esc(hhmm(v))}" oninput="onTimeType(this)" onblur="onTimeBlur(this)">`;
+}
+function onTimeType(el) {
+  const digits = el.value.replace(/\D/g, '').slice(0, 4);
+  let out = digits;
+  if (digits.length === 3) out = digits[0] + ':' + digits.slice(1);
+  else if (digits.length === 4) out = digits.slice(0, 2) + ':' + digits.slice(2);
+  if (out !== el.value) el.value = out;
+}
+function onTimeBlur(el) {
+  const v = el.value.trim();
+  if (!v) return;
+  const m = v.match(/^(\d{1,2}):?(\d{2})?$/);
+  if (!m) { el.value = ''; return; }
+  const h = Number(m[1]), mi = Number(m[2] || 0);
+  el.value = (h > 23 || mi > 59) ? '' : pad(h) + ':' + pad(mi);
+}
+async function saveItem() {
+  if (state.saving) return;
+  const m = state.modal;
+  const trip = tripById(state.route.tripId);
+  const type = m.itemType;
+  const e = m.ev || {};
+  const date = val('it-date');
+  if (!date) { toast(t('needDates')); return; }
+  const syncOn = document.getElementById('it-sync').checked;
+  const base = {
+    ...e,
+    id: m.id || uid(),
+    assignee: m.id ? e.assignee : (list(trip && trip.travellers).length ? list(trip.travellers) : DEFAULT_TRAVELLERS).join(','),
+    recurring: 'none', recur_until: '', exceptions: e.exceptions || '',
+    booking_ref: val('it-ref'),
+    sync_to_ios: syncOn,
+    recipients: syncOn ? picked('it-recips').join(',') : '',
+    alarm_minutes: syncOn ? serialiseAlarms(picked('it-alarms')) : ''
+  };
+  let item;
+  if (type === 'transport') {
+    const from = val('it-from'), to = val('it-to');
+    const title = val('it-title') || [from, to].filter(Boolean).join(' to ');
+    if (!title) { toast(t('needTitle')); return; }
+    item = { ...base, kind: 'travel', title, travel_method: picked('it-method')[0] || 'other',
+             from_location: from, to_location: to, date, time: val('it-time'),
+             end_date: val('it-end-date') || date, end_time: val('it-end-time'),
+             from_tz: val('it-from-tz'), to_tz: val('it-to-tz'), notes: val('it-notes') };
+  } else if (type === 'stay') {
+    const name = val('it-title');
+    if (!name) { toast(t('needTitle')); return; }
+    const checkout = val('it-checkout') || addDays(date, 1);
+    if (checkout <= date) { toast(t('endBeforeStart')); return; }
+    const last = addDays(checkout, -1);
+    item = { ...base, kind: 'stay', title: 'Hotel: ' + name.replace(/^hotel:\s*/i, ''), date, time: '', end_time: '',
+             end_date: last > date ? last : '', travel_method: '', from_location: '', to_location: '', from_tz: '', to_tz: '',
+             notes: joinNotes(val('it-loc'), val('it-notes')) };
+  } else {
+    const title = val('it-title');
+    if (!title) { toast(t('needTitle')); return; }
+    item = { ...base, kind: 'activity', title, date, time: val('it-time'), end_time: val('it-end-time'), end_date: '',
+             travel_method: '', from_location: '', to_location: '', from_tz: '', to_tz: '',
+             notes: joinNotes(val('it-loc'), val('it-notes')) };
+  }
+  await saving(async () => {
+    await send([{ action: m.id ? 'update' : 'add', kind: 'events', item }]);
+    state.modal = null;
+    toast(t('saved'));
+    render();
+  });
+}
+async function deleteItem() {
+  const m = state.modal;
+  if (!m || !m.id) return;
+  const changes = [{ action: 'delete', kind: 'events', id: m.id }]
+    .concat(filesFor(m.id).map(f => ({ action: 'delete', kind: 'files', id: f.id })));
+  await saving(async () => {
+    await send(changes);
+    state.modal = null;
+    toast(t('deleted'));
+    render();
+  });
+}
+
+/* Expense form */
+function openExpenseModal(tripId, id) {
+  const ex = id ? D().expenses.find(x => String(x.id) === String(id)) : null;
+  state.modal = { type: 'expense', form: true, tripId, id: id || null, ex };
+  render();
+}
+function expenseForm(m) {
+  const x = m.ex || {};
+  const trip = tripById(m.tripId) || {};
+  const trav = list(trip.travellers).length ? list(trip.travellers) : DEFAULT_TRAVELLERS;
+  const today = todayKey();
+  const defDate = x.date || (today >= trip.start_date && today <= trip.end_date ? today : trip.start_date);
+  const cur = x.currency || lsGet(LS.currency, 'GBP');
+  return `
+    <h3>${esc(m.id ? t('editExpense') : t('newExpense'))}</h3>
+    <div class="field"><label>${esc(t('fTitle'))}</label><input type="text" id="ex-title" value="${esc(x.title || '')}"></div>
+    <div class="field-row">
+      <div class="field"><label>${esc(t('amount'))}</label><input type="text" inputmode="decimal" id="ex-amount" value="${esc(x.amount === undefined ? '' : x.amount)}"></div>
+      <div class="field"><label>${esc(t('currency'))}</label><select id="ex-cur">${CURRENCIES.map(c => `<option ${c === cur ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>${esc(t('fDate'))}</label><input type="date" id="ex-date" value="${esc(defDate)}"></div>
+    <div class="field"><label>${esc(t('category'))}</label>${chips('ex-cat', EXP_CATS.map(c => [c, t('e_' + c)]), [x.category || 'food'], false)}</div>
+    <div class="field"><label>${esc(t('paidBy'))}</label>${chips('ex-paid', trav.map(p => [p, personName(p)]), [x.paid_by || trav[0]], false)}</div>
+    <div class="field"><label>${esc(t('splitWith'))}</label>${chips('ex-split', trav.map(p => [p, personName(p)]), list(x.split_with).length ? list(x.split_with) : trav, true)}</div>
+    <div class="field"><label>${esc(t('fNotes'))}</label><textarea id="ex-notes">${esc(x.notes || '')}</textarea></div>
+    ${modalButtons('saveExpense()', m.id ? deleteButton('deleteExpense') : '')}`;
+}
+async function saveExpense() {
+  if (state.saving) return;
+  const m = state.modal;
+  const title = val('ex-title');
+  const amount = parseFloat(val('ex-amount').replace(/[^0-9.,-]/g, '').replace(',', '.'));
+  if (!title) { toast(t('needTitle')); return; }
+  if (isNaN(amount)) { toast(t('needAmount')); return; }
+  const currency = val('ex-cur');
+  lsSet(LS.currency, currency);
+  const item = { ...(m.ex || {}), id: m.id || uid(), trip_id: m.tripId, title, amount, currency, date: val('ex-date'),
+                 category: picked('ex-cat')[0] || 'other', paid_by: picked('ex-paid')[0] || '',
+                 split_with: picked('ex-split').join(','), notes: val('ex-notes') };
+  await saving(async () => {
+    await send([{ action: m.id ? 'update' : 'add', kind: 'expenses', item }]);
+    state.modal = null; toast(t('saved')); render();
+  });
+}
+async function deleteExpense() {
+  const m = state.modal;
+  await saving(async () => {
+    await send([{ action: 'delete', kind: 'expenses', id: m.id }]);
+    state.modal = null; toast(t('deleted')); render();
+  });
+}
+
+/* ---------------- files ---------------- */
+let pendingFileTarget = null;
+function pickFile(parentId, tripId) {
+  if (!getSyncUrl() || !navigator.onLine) { toast(t('onlineOnly')); return; }
+  pendingFileTarget = { parentId, tripId };
+  const input = document.getElementById('file-input');
+  if (input) { input.value = ''; input.click(); }
+}
+function onFilePicked(input) {
+  const file = input.files && input.files[0];
+  if (!file || !pendingFileTarget) return;
+  if (file.size > 10 * 1024 * 1024) { toast(t('fileTooBig')); return; }
+  const target = pendingFileTarget;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = String(reader.result).split(',')[1] || '';
+    const id = uid();
+    setSavingOverlay(true, t('uploading'));
+    try {
+      const data = await postRaw({ action: 'upload', item: { id, parent_id: target.parentId, trip_id: target.tripId, name: file.name, mime: file.type || 'application/octet-stream' }, data: base64 });
+      applyServerData(data);
+      await idbPut(id, { name: file.name, mime: file.type, blob: file });
+      toast(t('fileSaved'));
+    } catch (e) {
+      toast(t('saveFail'));
+    } finally {
+      setSavingOverlay(false);
+      render();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+async function openFile(id) {
+  const meta = D().files.find(f => String(f.id) === String(id)) || {};
+  let rec = await idbGet(id);
+  if (!rec) {
+    if (!getSyncUrl()) { toast(t('fileFail')); return; }
+    setSavingOverlay(true, t('loadingFile'));
+    try {
+      const sep = getSyncUrl().indexOf('?') >= 0 ? '&' : '?';
+      const res = await fetch(getSyncUrl() + sep + 'action=file&id=' + encodeURIComponent(id), { redirect: 'follow' });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      const bin = atob(data.data);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      rec = { name: data.name, mime: data.mime, blob: new Blob([bytes], { type: data.mime }) };
+      await idbPut(id, rec);
+    } catch (e) {
+      setSavingOverlay(false); toast(t('fileFail')); return;
+    }
+    setSavingOverlay(false);
+  }
+  const url = URL.createObjectURL(rec.blob);
+  state.modal = { type: 'file', name: rec.name || meta.name, mime: rec.mime || meta.mime || '', url };
+  render();
+}
+function fileViewer(m) {
+  const isImg = /^image\//.test(m.mime);
+  const isPdf = /pdf/.test(m.mime);
+  return `
+    <h3 style="word-break:break-word">${esc(m.name)}</h3>
+    <div class="file-viewer">
+      ${isImg ? `<img src="${m.url}" alt="">` : isPdf ? `<iframe src="${m.url}"></iframe>` : ''}
+    </div>
+    <div class="type-hint" style="margin-top:8px">✓ ${esc(t('offlineSaved'))}</div>
+    <div class="modal-actions">
+      <a class="btn secondary" href="${m.url}" download="${esc(m.name)}" target="_blank" style="text-align:center;text-decoration:none">${esc(t('open'))}</a>
+      <button class="btn primary" onclick="closeModal()">${esc(t('close'))}</button>
+    </div>`;
+}
+async function deleteFile(id, btn) {
+  if (!btn.classList.contains('armed')) { btn.classList.add('armed'); btn.textContent = t('delConfirm'); return; }
+  await send([{ action: 'delete', kind: 'files', id }]);
+  await idbDel(id);
+  toast(t('fileDeleted'));
+  render();
+}
+
+/* ---------------- feedback ---------------- */
+async function saving(fn) {
+  state.saving = true;
+  setSavingOverlay(true);
+  try { await fn(); }
+  catch (e) { console.error(e); toast(t('saveFail')); }
+  finally { state.saving = false; setSavingOverlay(false); }
+}
+function setSavingOverlay(on, label) {
+  let host = document.getElementById('saving-overlay');
+  if (on) {
+    if (!host) { host = document.createElement('div'); host.id = 'saving-overlay'; document.body.appendChild(host); }
+    host.innerHTML = `<div class="saving-pill"><span class="spinner"></span>${esc(label || t('savingBtn'))}</div>`;
+  } else if (host) host.remove();
+}
+function toast(msg) {
+  let host = document.getElementById('toast-host');
+  if (!host) { host = document.createElement('div'); host.id = 'toast-host'; document.body.appendChild(host); }
+  host.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg; host.appendChild(el);
+  void el.offsetWidth;
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 350); }, 3000);
+}
+
+/* ---------------- language & start ---------------- */
+function setLang(lang) {
+  try { localStorage.setItem(LANG_KEY, lang); } catch {}
+  state.lang = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  document.body.classList.toggle('lang-zh', lang === 'zh');
+  render();
+}
+function init() {
+  let lang = 'en';
+  try { const v = localStorage.getItem(LANG_KEY); if (v === 'zh' || v === 'en') lang = v; else if (/^zh/i.test(navigator.language || '')) lang = 'zh'; } catch {}
+  state.lang = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  document.body.classList.toggle('lang-zh', lang === 'zh');
+  const cached = lsGet(LS.cache, null);
+  if (cached) ['events', 'trips', 'packing', 'expenses', 'files'].forEach(k => { if (Array.isArray(cached[k])) state.data[k] = cached[k]; });
+  state.route = parseRoute();
+  setSync(getSyncUrl() ? 'syncing' : 'idle', getSyncUrl() ? t('syncing') : t('syncIdle'));
+  render();
+  pull();
+  state.pollTimer = setInterval(() => { if (!document.hidden) pull(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) pull(); });
+}
+init();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
+
+</script>
+</body>
+</html>
