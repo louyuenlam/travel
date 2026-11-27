@@ -1359,6 +1359,35 @@ body.lang-zh .day-head .dh-date { font-family: inherit; }
 .trip-title { font-weight: 800; }
 .ticket-card { border: none; background: white; border-radius: 12px; }
 
+/* v4: all 5 tabs fit on one row (iPhone 14 = 390pt wide) */
+.tabbar, .tabbar.four, .tabbar.five { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; overflow: visible; }
+.tabbar button, .tabbar.five button { min-width: 0; padding: 0 2px; font-size: 13px; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-width: 2px; }
+body.lang-zh .tabbar button { font-size: 14px; letter-spacing: 0; }
+.pass-name { font-size: 40px; }
+@media (max-width: 380px) { .tabbar button, .tabbar.five button { font-size: 12px; } }
+
+/* v4: ticket wallet */
+.wallet-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; border-radius: 14px; background: var(--navy); color: var(--pass); font-size: 16px; font-weight: 800; margin-bottom: 10px; }
+.wallet-sub { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
+.wallet { position: fixed; inset: 0; z-index: 150; background: var(--navy); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+.wallet-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; color: var(--pass); }
+.wallet-bar .wb-count { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; }
+.wallet-bar .wb-hint { font-size: 12px; opacity: .85; flex: 1; text-align: center; }
+.wallet-bar .wb-close { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,244,224,.15); color: var(--pass); font-size: 20px; }
+.wallet-track { flex: 1; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.wallet-track::-webkit-scrollbar { display: none; }
+.wslide { flex: 0 0 100%; scroll-snap-align: center; overflow-y: auto; padding: 0 12px 16px; box-sizing: border-box; }
+.wcard { background: white; border-radius: 18px; overflow: hidden; }
+.wcard-head { background: var(--pass); padding: 12px 16px; border-bottom: 2px dashed var(--pass-line); }
+.wcard-head .wh-when { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--navy); }
+.wcard-head .wh-title { font-size: 18px; font-weight: 800; margin-top: 2px; line-height: 1.25; }
+.wcard-head .wh-ref { font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700; margin-top: 4px; letter-spacing: 1px; }
+.wcard-head .wh-file { font-size: 11px; color: var(--muted); margin-top: 4px; word-break: break-all; }
+.wcard-body { padding: 10px; min-height: 200px; display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center; }
+.wcard-body img, .wcard-body canvas { width: 100%; height: auto; display: block; border-radius: 6px; }
+.wcard-body iframe { width: 100%; height: 65vh; border: none; }
+.wcard-body .wload { color: var(--muted); font-size: 13px; }
+
 /* Packing / budget accents */
 .progress > div { background: var(--navy); }
 .pack-check.on { background: var(--navy); border-color: var(--navy); }
@@ -1377,7 +1406,7 @@ body.lang-zh .day-head .dh-date { font-family: inherit; }
  * phones automatically. Trips, packing, expenses and files live in their
  * own sheets.
  * ============================================================ */
-const APP_VERSION = 'v3 · 2026-11-26';
+const APP_VERSION = 'v4 · 2026-11-26';
 
 const LS = {
   syncUrl: 'travelSyncUrl_v1',
@@ -1452,6 +1481,9 @@ const I18N = {
     needDates: 'Please add the dates', endBeforeStart: 'Last day is before the first day', needAmount: 'Please add an amount',
     syncUrlLabel: 'Apps Script sync URL', syncUrlHint: 'The Apps Script address shared with the family calendar. Already filled in.',
     settings: 'Sync settings', untitled: '(untitled)', onlineOnly: 'You need to be online for this',
+    showTickets: n => `Show all tickets (${n})`, noTicketFiles: 'Add ticket PDFs or screenshots below — they all appear together here, ready to scan.',
+    cachedN: (a, b) => `${a}/${b} saved on this phone`, saveAll: 'Save all for offline', savingAll: (a, b) => `Saving ${a}/${b}…`, allSaved: 'All tickets saved on this phone',
+    walletHint: 'Swipe for the next ticket · turn screen brightness up', otherDocsShort: 'Other documents', uploadingN: (a, b) => `Uploading ${a}/${b}…`, filesSaved: n => `${n} files added`,
     daysToGo: n => n === 1 ? 'day to go' : 'days to go', pkDate: 'DATE', pkWho: 'PASSENGERS', pkNights: 'NIGHTS', dayTrip: 'Day trip',
     tabMap: 'Map', checkinBtn: '📍 Check in here', addGpx: '+ Upload GPX route', routes: 'Routes', checkins: 'Check-ins',
     mapIntro: 'Record a walk with Open GPX Tracker, export the .gpx file and upload it here. Check-ins save where you are right now.',
@@ -1506,6 +1538,9 @@ const I18N = {
     needDates: '請填日期', endBeforeStart: '最後一日早過第一日', needAmount: '請填金額',
     syncUrlLabel: 'Apps Script 同步網址', syncUrlHint: '同家庭日曆共用嘅 Apps Script 網址，已經預設好。',
     settings: '同步設定', untitled: '(冇標題)', onlineOnly: '要有網先做到',
+    showTickets: n => `出示全部車票 (${n})`, noTicketFiles: '喺下面加車票 PDF 或者截圖，全部會集中喺呢度，方便掃 QR code。',
+    cachedN: (a, b) => `已存喺手機 ${a}/${b}`, saveAll: '全部存落手機', savingAll: (a, b) => `儲存緊 ${a}/${b}…`, allSaved: '全部車票已存喺手機',
+    walletHint: '左右掃睇下一張 · 記得調高螢幕光度', otherDocsShort: '其他文件', uploadingN: (a, b) => `上載緊 ${a}/${b}…`, filesSaved: n => `已加入 ${n} 個檔案`,
     daysToGo: n => '日後出發', pkDate: '日期', pkWho: '乘客', pkNights: '晚數', dayTrip: '即日來回',
     tabMap: '地圖', checkinBtn: '📍 喺度打卡', addGpx: '+ 上載 GPX 路線', routes: '路線', checkins: '打卡',
     mapIntro: '用 Open GPX Tracker 錄低行過嘅路，匯出 .gpx 檔再上載到呢度。打卡會記低你而家嘅位置。',
@@ -1756,11 +1791,18 @@ async function idbGet(id) {
   try { const db = await idb(); return await new Promise(r => { const q = db.transaction('files').objectStore('files').get(id); q.onsuccess = () => r(q.result || null); q.onerror = () => r(null); }); }
   catch { return null; }
 }
+const cachedIds = new Set();
+async function idbLoadKeys() {
+  try { const db = await idb(); const keys = await new Promise(r => { const q = db.transaction('files').objectStore('files').getAllKeys(); q.onsuccess = () => r(q.result || []); q.onerror = () => r([]); }); keys.forEach(k => cachedIds.add(String(k))); }
+  catch {}
+}
 async function idbPut(id, val) {
+  cachedIds.add(String(id));
   try { const db = await idb(); await new Promise(r => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').put(val, id); tx.oncomplete = r; tx.onerror = r; }); }
   catch {}
 }
 async function idbDel(id) {
+  cachedIds.delete(String(id));
   try { const db = await idb(); await new Promise(r => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').delete(id); tx.oncomplete = r; tx.onerror = r; }); }
   catch {}
 }
@@ -2012,8 +2054,15 @@ function renderTickets(trip) {
         <button class="mini-add" style="margin-top:10px" onclick="pickFile('${esc(e.id)}', '${esc(trip.id)}')">${esc(t('addFile'))}</button>
       </div>`;
   }).join('');
+  const wf = walletFiles(trip);
+  const cached = wf.filter(x => cachedIds.has(String(x.file.id))).length;
   return `
     <div class="card">
+      ${wf.length ? `
+        <button class="wallet-btn" onclick="openWallet('${esc(trip.id)}')">🎫 ${esc(t('showTickets', wf.length))}</button>
+        <div class="wallet-sub"><span>${esc(cached === wf.length ? '✓ ' + t('allSaved') : t('cachedN', cached, wf.length))}</span>
+          ${cached < wf.length ? `<button class="small-btn" onclick="cacheAllTickets('${esc(trip.id)}')">${esc(t('saveAll'))}</button>` : ''}</div>`
+        : `<div class="type-hint">${esc(t('noTicketFiles'))}</div>`}
       <div class="type-hint">${esc(t('tkIntro'))}</div>
       ${cards || `<div class="empty-state">${esc(t('nothingDay'))}</div>`}
       <div class="section-title">${esc(t('otherDocs'))}</div>
@@ -2021,7 +2070,7 @@ function renderTickets(trip) {
       ${fileRows(trip.id)}
       <button class="mini-add" style="margin-top:10px" onclick="pickFile('${esc(trip.id)}', '${esc(trip.id)}')">${esc(t('addFile'))}</button>
     </div>
-    <input type="file" id="file-input" accept="image/*,application/pdf" style="display:none" onchange="onFilePicked(this)">`;
+    <input type="file" id="file-input" accept="image/*,application/pdf" multiple style="display:none" onchange="onFilePicked(this)">`;
 }
 function copyText(s) {
   const done = () => toast(t('copied'));
@@ -2540,10 +2589,155 @@ async function deleteCheckin() {
   });
 }
 
+/* ---- Ticket wallet (all QR tickets in one swipeable screen) ---- */
+function isTicketFile(f) { return /^image\//.test(f.mime || '') || /pdf/i.test(f.mime || '') || /\.(pdf|png|jpe?g|heic|webp)$/i.test(f.name || ''); }
+function walletFiles(trip) {
+  const out = [];
+  itemsSorted(tripItems(trip)).forEach(e => filesFor(e.id).filter(isTicketFile).forEach(f => out.push({ file: f, ev: e })));
+  filesFor(trip.id).filter(isTicketFile).forEach(f => out.push({ file: f, ev: null }));
+  return out;
+}
+async function getFileRec(id) {
+  let rec = await idbGet(id);
+  if (!rec) rec = await fetchFileRec(id);
+  return rec;
+}
+async function cacheAllTickets(tripId) {
+  const trip = tripById(tripId);
+  if (!trip) return;
+  const todo = walletFiles(trip).filter(x => !cachedIds.has(String(x.file.id)));
+  if (!todo.length) { toast(t('allSaved')); return; }
+  if (!navigator.onLine) { toast(t('onlineOnly')); return; }
+  let n = 0, failed = 0;
+  for (const x of todo) {
+    setSavingOverlay(true, t('savingAll', n + 1, todo.length));
+    try { await fetchFileRec(x.file.id); } catch { failed++; }
+    n++;
+  }
+  setSavingOverlay(false);
+  toast(failed ? t('fileFail') : t('allSaved'));
+  render();
+}
+function openWallet(tripId) {
+  const trip = tripById(tripId);
+  if (!trip) return;
+  const list = walletFiles(trip);
+  if (!list.length) return;
+  const today = todayKey();
+  let start = list.findIndex(x => x.ev && lastNight(x.ev) >= today);
+  if (start < 0) start = 0;
+  state.modal = { type: 'wallet', form: true, tripId, list, start };
+  render();
+  const track = document.getElementById('wallet-track');
+  if (track) {
+    track.scrollLeft = start * track.clientWidth;
+    track.addEventListener('scroll', () => {
+      const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      const c = document.getElementById('wallet-count');
+      if (c) c.textContent = `${i + 1} / ${list.length}`;
+    }, { passive: true });
+  }
+  list.forEach(x => fillWalletSlide(x.file));
+}
+function walletView(m) {
+  const slides = m.list.map(x => {
+    const e = x.ev;
+    let when = '', title = t('otherDocsShort'), ref = '';
+    if (e) {
+      const p = itemRowParts(e);
+      when = fmtDay(e.date) + (p.time ? ' · ' + p.time : '');
+      title = e.title || t('untitled');
+      ref = e.booking_ref ? String(e.booking_ref).replace(/^'/, '') : '';
+    }
+    return `
+      <div class="wslide">
+        <div class="wcard">
+          <div class="wcard-head">
+            ${when ? `<div class="wh-when">${esc(when)}</div>` : ''}
+            <div class="wh-title">${esc(title)}</div>
+            ${ref ? `<div class="wh-ref">${esc(ref)}</div>` : ''}
+            <div class="wh-file">${esc(x.file.name || '')}</div>
+          </div>
+          <div class="wcard-body" id="wbody-${esc(x.file.id)}"><div class="wload">${esc(t('loadingFile'))}</div></div>
+        </div>
+      </div>`;
+  }).join('');
+  return `
+    <div class="wallet">
+      <div class="wallet-bar">
+        <span class="wb-count" id="wallet-count">${m.start + 1} / ${m.list.length}</span>
+        <span class="wb-hint">${esc(t('walletHint'))}</span>
+        <button class="wb-close" aria-label="${esc(t('close'))}" onclick="closeWallet()">✕</button>
+      </div>
+      <div class="wallet-track" id="wallet-track">${slides}</div>
+    </div>`;
+}
+function closeWallet() {
+  (state.modal && state.modal.urls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch {} });
+  state.modal = null; render();
+}
+async function fillWalletSlide(f) {
+  const box = () => document.getElementById('wbody-' + f.id);
+  let rec;
+  try { rec = await getFileRec(f.id); }
+  catch { const b = box(); if (b) b.innerHTML = `<div class="wload">${esc(t('fileFail'))}</div>`; return; }
+  const b = box();
+  if (!b || !state.modal || state.modal.type !== 'wallet') return;
+  const mime = rec.mime || f.mime || '';
+  const url = URL.createObjectURL(rec.blob);
+  (state.modal.urls = state.modal.urls || []).push(url);
+  if (/^image\//.test(mime)) { b.innerHTML = `<img alt="" src="${url}">`; return; }
+  if (/pdf/i.test(mime) || /\.pdf$/i.test(f.name || '')) {
+    try { await renderPdfInto(b, rec.blob); }
+    catch { b.innerHTML = `<iframe src="${url}"></iframe>`; }
+    return;
+  }
+  b.innerHTML = `<a class="btn secondary" href="${url}" target="_blank">${esc(t('open'))}</a>`;
+}
+let pdfjsPromise = null;
+const PDFJS_VER = '3.11.174';
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (pdfjsPromise) return pdfjsPromise;
+  pdfjsPromise = new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.crossOrigin = 'anonymous';
+    sc.src = `https://unpkg.com/pdfjs-dist@${PDFJS_VER}/legacy/build/pdf.min.js`;
+    sc.onload = () => {
+      const lib = window.pdfjsLib;
+      if (!lib) { pdfjsPromise = null; reject(new Error('pdfjs')); return; }
+      lib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${PDFJS_VER}/legacy/build/pdf.worker.min.js`;
+      resolve(lib);
+    };
+    sc.onerror = () => { pdfjsPromise = null; sc.remove(); reject(new Error('pdfjs')); };
+    document.head.appendChild(sc);
+  });
+  return pdfjsPromise;
+}
+// Draw every PDF page as a sharp image, so QR codes on page 2+ (e.g. second passenger) show too
+async function renderPdfInto(box, blob) {
+  const lib = await loadPdfJs();
+  const pdf = await lib.getDocument({ data: await blob.arrayBuffer() }).promise;
+  box.innerHTML = '';
+  const width = Math.max(320, box.clientWidth || 360);
+  const dpr = Math.min(3, window.devicePixelRatio || 2);
+  for (let i = 1; i <= pdf.numPages && i <= 20; i++) {
+    const page = await pdf.getPage(i);
+    const v1 = page.getViewport({ scale: 1 });
+    const vp = page.getViewport({ scale: (width / v1.width) * dpr });
+    const c = document.createElement('canvas');
+    c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    if (!document.body.contains(box)) return;
+    box.appendChild(c);
+  }
+}
+
 /* ---------------- modals ---------------- */
 function renderModal() {
   const m = state.modal;
   if (!m) return '';
+  if (m.type === 'wallet') return walletView(m);
   let inner = '';
   if (m.type === 'trip') inner = tripForm(m);
   else if (m.type === 'item') inner = itemForm(m);
@@ -2862,29 +3056,35 @@ function pickFile(parentId, tripId) {
   const input = document.getElementById('file-input');
   if (input) { input.value = ''; input.click(); }
 }
-function onFilePicked(input) {
-  const file = input.files && input.files[0];
-  if (!file || !pendingFileTarget) return;
-  if (file.size > 10 * 1024 * 1024) { toast(t('fileTooBig')); return; }
+function readAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+async function onFilePicked(input) {
+  const files = Array.from(input.files || []);
+  if (!files.length || !pendingFileTarget) return;
   const target = pendingFileTarget;
-  const reader = new FileReader();
-  reader.onload = async () => {
-    const base64 = String(reader.result).split(',')[1] || '';
+  const ok = files.filter(f => f.size <= 10 * 1024 * 1024);
+  if (ok.length < files.length) toast(t('fileTooBig'));
+  let done = 0, failed = 0;
+  for (const file of ok) {
+    setSavingOverlay(true, ok.length > 1 ? t('uploadingN', done + 1, ok.length) : t('uploading'));
     const id = uid();
-    setSavingOverlay(true, t('uploading'));
     try {
+      const base64 = await readAsBase64(file);
       const data = await postRaw({ action: 'upload', item: { id, parent_id: target.parentId, trip_id: target.tripId, name: file.name, mime: file.type || 'application/octet-stream' }, data: base64 });
       applyServerData(data);
       await idbPut(id, { name: file.name, mime: file.type, blob: file });
-      toast(t('fileSaved'));
-    } catch (e) {
-      toast(t('saveFail'));
-    } finally {
-      setSavingOverlay(false);
-      render();
-    }
-  };
-  reader.readAsDataURL(file);
+      done++;
+    } catch (e) { failed++; }
+  }
+  setSavingOverlay(false);
+  toast(failed ? t('saveFail') : (done > 1 ? t('filesSaved', done) : t('fileSaved')));
+  render();
 }
 async function openFile(id) {
   const meta = D().files.find(f => String(f.id) === String(id)) || {};
@@ -2980,6 +3180,7 @@ function init() {
   state.route = parseRoute();
   setSync(getSyncUrl() ? 'syncing' : 'idle', getSyncUrl() ? t('syncing') : t('syncIdle'));
   render();
+  idbLoadKeys().then(() => { if (state.route.tab === 'tickets') rerender(); });
   pull();
   state.pollTimer = setInterval(() => { if (!document.hidden) pull(); }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) pull(); });

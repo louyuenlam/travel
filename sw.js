@@ -5,10 +5,10 @@
 //     Updates ship the moment they're pushed; users don't have to clear caches.
 //   - Other assets (icon, manifest, etc): cache-first → fast, offline-friendly.
 //   - Apps Script API: never touched by SW — always live.
-//   - Map library (Leaflet on unpkg): cache-first.
+//   - Map library (Leaflet) and PDF renderer (pdf.js) on unpkg: cache-first.
 //   - Map tiles (CARTO): cache-first in their own cache (capped), so maps you've looked at work offline.
 
-const CACHE_VERSION = 'travel-v3';  // v3 · 2026-11-26
+const CACHE_VERSION = 'travel-v4';  // v4 · 2026-11-26
 const TILE_CACHE = 'travel-tiles';
 const TILE_MAX = 2000;
 const ASSETS = ['./icon.png'];
@@ -42,7 +42,7 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
 
   // Leaflet library + map tiles — cache-first
-  const isLib = url.hostname === 'unpkg.com' && url.pathname.startsWith('/leaflet@');
+  const isLib = url.hostname === 'unpkg.com' && (url.pathname.startsWith('/leaflet@') || url.pathname.startsWith('/pdfjs-dist@'));
   const isTile = url.hostname.endsWith('basemaps.cartocdn.com');
   if (isLib || isTile) {
     const cacheName = isTile ? TILE_CACHE : CACHE_VERSION;
