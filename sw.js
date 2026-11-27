@@ -8,7 +8,7 @@
 //   - Map library (Leaflet) and PDF renderer (pdf.js) on unpkg: cache-first.
 //   - Map tiles (CARTO): cache-first in their own cache (capped), so maps you've looked at work offline.
 
-const CACHE_VERSION = 'travel-v4';  // v4 · 2026-11-26
+const CACHE_VERSION = 'travel-v5';  // v5 · 2026-11-27
 const TILE_CACHE = 'travel-tiles';
 const TILE_MAX = 2000;
 const ASSETS = ['./icon.png'];

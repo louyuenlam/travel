@@ -1366,6 +1366,12 @@ body.lang-zh .tabbar button { font-size: 14px; letter-spacing: 0; }
 .pass-name { font-size: 40px; }
 @media (max-width: 380px) { .tabbar button, .tabbar.five button { font-size: 12px; } }
 
+/* v5: tab bar stays at the top while scrolling */
+.tabbar, .tabbar.four, .tabbar.five { position: sticky; top: 0; z-index: 60; padding: calc(env(safe-area-inset-top) + 6px) 0 8px; margin-left: -4px; margin-right: -4px; padding-left: 4px; padding-right: 4px; background: var(--sky); }
+.tab-body { min-height: calc(100vh - 60px); }
+.me-dot { width: 16px; height: 16px; border-radius: 50%; background: #2F80ED; border: 3px solid white; box-shadow: 0 0 0 2px rgba(47,128,237,.35), 0 1px 4px rgba(0,0,0,.3); }
+.btn.on { background: #2F80ED; color: white; border-color: #2F80ED; }
+
 /* v4: ticket wallet */
 .wallet-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; border-radius: 14px; background: var(--navy); color: var(--pass); font-size: 16px; font-weight: 800; margin-bottom: 10px; }
 .wallet-sub { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
@@ -1406,7 +1412,7 @@ body.lang-zh .tabbar button { font-size: 14px; letter-spacing: 0; }
  * phones automatically. Trips, packing, expenses and files live in their
  * own sheets.
  * ============================================================ */
-const APP_VERSION = 'v4 · 2026-11-26';
+const APP_VERSION = 'v5 · 2026-11-27';
 
 const LS = {
   syncUrl: 'travelSyncUrl_v1',
@@ -1485,7 +1491,7 @@ const I18N = {
     cachedN: (a, b) => `${a}/${b} saved on this phone`, saveAll: 'Save all for offline', savingAll: (a, b) => `Saving ${a}/${b}…`, allSaved: 'All tickets saved on this phone',
     walletHint: 'Swipe for the next ticket · turn screen brightness up', otherDocsShort: 'Other documents', uploadingN: (a, b) => `Uploading ${a}/${b}…`, filesSaved: n => `${n} files added`,
     daysToGo: n => n === 1 ? 'day to go' : 'days to go', pkDate: 'DATE', pkWho: 'PASSENGERS', pkNights: 'NIGHTS', dayTrip: 'Day trip',
-    tabMap: 'Map', checkinBtn: '📍 Check in here', addGpx: '+ Upload GPX route', routes: 'Routes', checkins: 'Check-ins',
+    tabMap: 'Map', liveOn: '◎ Show me', liveOff: '◎ Showing me', checkinBtn: '📍 Check in here', addGpx: '+ Upload GPX route', routes: 'Routes', checkins: 'Check-ins',
     mapIntro: 'Record a walk with Open GPX Tracker, export the .gpx file and upload it here. Check-ins save where you are right now.',
     noRoutes: 'No routes yet.', noCheckins: 'No check-ins yet.', mapNeedNet: 'The map needs an internet connection the first time.',
     locating: 'Finding your location…', gpsFail: 'Could not get your location — allow Location for this app, or use the map centre',
@@ -1542,7 +1548,7 @@ const I18N = {
     cachedN: (a, b) => `已存喺手機 ${a}/${b}`, saveAll: '全部存落手機', savingAll: (a, b) => `儲存緊 ${a}/${b}…`, allSaved: '全部車票已存喺手機',
     walletHint: '左右掃睇下一張 · 記得調高螢幕光度', otherDocsShort: '其他文件', uploadingN: (a, b) => `上載緊 ${a}/${b}…`, filesSaved: n => `已加入 ${n} 個檔案`,
     daysToGo: n => '日後出發', pkDate: '日期', pkWho: '乘客', pkNights: '晚數', dayTrip: '即日來回',
-    tabMap: '地圖', checkinBtn: '📍 喺度打卡', addGpx: '+ 上載 GPX 路線', routes: '路線', checkins: '打卡',
+    tabMap: '地圖', liveOn: '◎ 顯示我', liveOff: '◎ 顯示緊', checkinBtn: '📍 喺度打卡', addGpx: '+ 上載 GPX 路線', routes: '路線', checkins: '打卡',
     mapIntro: '用 Open GPX Tracker 錄低行過嘅路，匯出 .gpx 檔再上載到呢度。打卡會記低你而家嘅位置。',
     noRoutes: '仲未有路線。', noCheckins: '仲未有打卡。', mapNeedNet: '第一次開地圖要有網。',
     locating: '搵緊你嘅位置…', gpsFail: '攞唔到位置，請俾呢個 app 用「位置」，或者用地圖中心',
@@ -1815,7 +1821,22 @@ function parseRoute() {
   return { view: 'home', tripId: null, tab: 'itin' };
 }
 function go(hash) { if (location.hash === hash) { state.route = parseRoute(); render(); } else location.hash = hash; }
-window.addEventListener('hashchange', () => { state.route = parseRoute(); state.modal = null; mapState.picking = false; render(); window.scrollTo(0, 0); });
+window.addEventListener('hashchange', () => {
+  const prev = state.route;
+  state.route = parseRoute();
+  state.modal = null; mapState.picking = false;
+  if (state.route.tab !== 'map' || state.route.view !== 'trip') stopLiveLocation();
+  const sameTrip = prev && prev.view === 'trip' && state.route.view === 'trip' && String(prev.tripId) === String(state.route.tripId);
+  const y = window.scrollY;
+  render();
+  if (!sameTrip) { window.scrollTo(0, 0); return; }
+  // Switching tabs inside a trip: don't jump to the top. If the tab bar is stuck at the top, show the new tab from its start.
+  const bar = document.querySelector('.tabbar');
+  if (!bar) return;
+  const prevEl = bar.previousElementSibling;
+  const barTop = prevEl ? prevEl.getBoundingClientRect().bottom + window.scrollY + (parseFloat(getComputedStyle(prevEl).marginBottom) || 0) : 0;
+  window.scrollTo(0, Math.min(y, barTop));
+});
 
 /* ---------------- rendering ---------------- */
 function rerender() {
@@ -1954,7 +1975,7 @@ function renderTrip(trip, tab) {
       <div class="tabbar five">
         ${tabs.map(([k, l]) => `<button class="${tab === k ? 'active' : ''}" onclick="go('#/trip/${encodeURIComponent(trip.id)}/${k}')">${esc(t(l))}</button>`).join('')}
       </div>
-      ${content}
+      <div class="tab-body">${content}</div>
     </div>`;
 }
 
@@ -2226,7 +2247,30 @@ const CHECKIN_PARENT = 'checkin';
 const CHECKIN_MIME = 'application/x-checkin';
 const ROUTE_COLOURS = ['#5a7196', '#c0694e', '#5f8f62', '#8e6bb0', '#c99a2e', '#3f8f9a'];
 const LEAFLET_VER = '1.9.4';
-const mapState = { el: null, map: null, layers: null, tripId: null, sig: '', gpx: {}, failed: {}, loading: {}, hidden: new Set(), picking: false };
+const mapState = { el: null, map: null, layers: null, tripId: null, sig: '', gpx: {}, failed: {}, loading: {}, hidden: new Set(), picking: false, watchId: null, me: null, meFirst: false };
+function liveOn() { return mapState.watchId !== null; }
+function toggleLiveLocation() {
+  if (liveOn()) { stopLiveLocation(); render(); return; }
+  if (!navigator.geolocation) { toast(t('gpsFail')); return; }
+  mapState.meFirst = true;
+  mapState.watchId = navigator.geolocation.watchPosition(pos => {
+    const c = pos.coords, ll = [c.latitude, c.longitude];
+    if (!mapState.map || !window.L) return;
+    if (!mapState.me) {
+      mapState.me = {
+        acc: L.circle(ll, { radius: c.accuracy || 0, color: '#2F80ED', weight: 1, fillColor: '#2F80ED', fillOpacity: 0.12 }).addTo(mapState.map),
+        dot: L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="me-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }), zIndexOffset: 1000 }).addTo(mapState.map)
+      };
+    } else { mapState.me.acc.setLatLng(ll).setRadius(c.accuracy || 0); mapState.me.dot.setLatLng(ll); }
+    if (mapState.meFirst) { mapState.meFirst = false; mapState.map.setView(ll, Math.max(mapState.map.getZoom(), 16)); }
+  }, () => { toast(t('gpsFail')); stopLiveLocation(); render(); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+  render();
+}
+function stopLiveLocation() {
+  if (mapState.watchId !== null && navigator.geolocation) navigator.geolocation.clearWatch(mapState.watchId);
+  mapState.watchId = null;
+  if (mapState.me) { try { mapState.me.acc.remove(); mapState.me.dot.remove(); } catch {} mapState.me = null; }
+}
 
 function isMapFile(f) { const p = String(f.parent_id); return p === GPX_PARENT || p === CHECKIN_PARENT; }
 function gpxFiles(trip) {
@@ -2335,6 +2379,7 @@ function renderMap(trip) {
       ${mapState.picking ? `<div class="type-hint" style="margin-top:8px">${esc(t('pickHint'))}</div>
         <div class="map-actions"><button class="btn secondary" onclick="cancelPick()">${esc(t('cancel'))}</button><button class="btn primary" onclick="confirmPick('${esc(trip.id)}')">${esc(t('save'))}</button></div>`
       : `<div class="map-actions">
+        <button class="btn secondary ${liveOn() ? 'on' : ''}" onclick="toggleLiveLocation()">${esc(liveOn() ? t('liveOff') : t('liveOn'))}</button>
         <button class="btn primary" onclick="checkInHere('${esc(trip.id)}')">${esc(t('checkinBtn'))}</button>
       </div>
       <button class="mini-add" style="margin-top:8px" onclick="startPick()">${esc(t('useCentre'))}</button>`}
